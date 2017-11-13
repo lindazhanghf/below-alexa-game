@@ -1,4 +1,4 @@
-"use strict";
+"use strict"; /* Documentation: https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs */
 
 var Alexa = require("alexa-sdk");
 
@@ -11,10 +11,13 @@ const game_state = {
 
 var belowScript = {
     'START': {
-        text: `Welcome to below game, you can pause this game anytime by saying exit and your progress will be saved.`
+        text: `Welcome to below game, you can pause this game anytime by saying exit and your progress will be saved. `
     },
     'RETURNING': {
-        text: `Welcome back to below game, you can restart the game by saying start over.`
+        text: `Welcome back to below game, you can restart the game by saying start over. `
+    },
+    'HELP': {
+        text: `I am not sure what you mean. Let me repeat myself here. `
     },
     'FIRST': {
         text: `You're alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: Hello? `,
@@ -42,11 +45,11 @@ var belowScript = {
         options: [
             {
                 next: 'SHE_SHE',
-                triggers: ['askSituation']
+                triggers: ['AskSituation']
             },
             {
                 next: 'THIS_IS',
-                triggers: ['askPerson']
+                triggers: ['AskWho']
             }
         ]
     },
@@ -197,9 +200,11 @@ var handlers = {
         var intentName = this.attributes.game.currentIntent;
         var nextIndex = checkTrigger(intentName, this.attributes.game.currentIndex);
 
-        if (nextIndex === -1) { // Did not trigger the next dialog
-            this.response.listen('I am not sure what you mean. What information do you want to know?');
-            this.emit(':responseReady');
+        if (nextIndex === undefined) { // Did not trigger the next dialog
+            // this.response.listen('I am not sure what you mean. What information do you want to know?');
+            // this.emit(':responseReady');
+            this.attributes.game.state = game_state.HELP;
+            this.emit('GenerateDialog');
             console.log('Failed to trigger');
         } else {
             this.attributes.game.currentIndex = nextIndex;
@@ -224,24 +229,42 @@ var handlers = {
     this.emit(':responseReady');
   },
 
+
+    'Unhandled': function() {
+        this.attributes.game.state = game_state.HELP;
+        this.emit('GenerateDialog');
+        console.log('Unhandled');
+    },
+
+
   /* CUSTOM INTENTS */
   'HelloIntent': function () {
-    // this.response.speak("Hello? Can anyone hear me? Anyone.");
     this.attributes.game.currentIntent = 'HelloIntent';
     this.emit('ParseIntent');
   },
+
+  'AskSituation': function () {
+    this.attributes.game.currentIntent = 'AskSituation';
+    this.emit('ParseIntent');
+  },
+
+  'AskWho': function () {
+    this.attributes.game.currentIntent = 'AskWho';
+    this.emit('ParseIntent');
+  },
+
 }
 
 var checkTrigger = function(intentName, currIndex) {
     console.log('Parsing intent: ' + intentName);
-    var nextIndex = -1;
-    // belowScript[currIndex].options.forEach( function(option) {
-    //     option.triggers.forEach( function(trigger) {
-    //         if (intentName == trigger || trigger === 'anything') {
-    //             nextIndex = option.next;
-    //         }
-    //     })
-    // });
+    var nextIndex;
+    belowScript[currIndex].options.forEach( function(option) {
+        option.triggers.forEach( function(trigger) {
+            if (trigger === 'anything' || intentName == trigger) {
+                nextIndex = option.next;
+            }
+        })
+    });
 
     return nextIndex;
 }
