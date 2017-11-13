@@ -2,14 +2,15 @@
 
 var Alexa = require("alexa-sdk");
 
-const GAME_STATES = {
-    TRIVIA: '_GAMEMODE', // Main game mode, in conversation
-    START: '_STARTMODE', // Starting point of the game.
-    HELP: '_HELPMODE', // The user is asking for help.
-};
+const game_state = {
+    START: 'START',
+    RETURNING: 'RETURNING',
+    GAME: 'GAME',
+    HELP: 'HELP'
+}
 
 var belowScript = {
-    'WELCOME': {
+    'START': {
         text: `Welcome to below game, you can pause this game anytime by saying exit and your progress will be saved.`
     },
     'RETURNING': {
@@ -179,22 +180,19 @@ var belowScript = {
 
 var handlers = {
   'LaunchRequest': function() {
-    this.handler.state = GAME_STATES.START;
     if (Object.keys(this.attributes).length === 0) { // First time player
       this.attributes.game = {
-        'currentIndex' : 0,
+        'state' : game_state.START,
+        'currentIndex' : 'FIRST',
         'currentIntent' : ''
       };
-      this.response.speak('Welcome to below game, you can pause this game anytime by saying exit and your progress will be saved.').listen();
     } else {
-      this.response.speak('Welcome back to below game, you can restart the game by saying start over.').listen();
+        this.attributes.game.state = game_state.RETURNING;
     }
-    // this.response.listen('Welcome to below game. You are alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: Hello');
-    this.emit(':responseReady');
-    // this.emit('ContinueDialog');
+    this.emit('GenerateDialog');
   },
 
-    // Check response and determine the next dialog
+  // Check response and determine the next dialog
     'ParseIntent': function() {
         var intentName = this.attributes.game.currentIntent;
         var nextIndex = checkTrigger(intentName, this.attributes.game.currentIndex);
@@ -206,31 +204,31 @@ var handlers = {
         } else {
             this.attributes.game.currentIndex = nextIndex;
             console.log('Next script - ' + nextIndex);
-            this.emit('ContinueDialog');
+            this.emit('GenerateDialog');
         }
     },
 
-  'ContinueDialog': function() {
-    // var currentIndex = this.attributes.flashcards.languages[currentLanguage].currentIndex;
+  'GenerateDialog': function() {
+    var speechOutput = '';
+
+    if (this.attributes.game.state != game_state.GAME) {
+        speechOutput += belowScript[this.attributes.game.state].text;
+        this.attributes.game.state = game_state.GAME;
+    }
+
     var currentIndex = this.attributes.game.currentIndex;
-    var currentScript = belowScript[currentIndex].text;
+    speechOutput += belowScript[currentIndex].text;
 
     console.log('Reading script - ' + currentIndex);
-    this.response.speak(currentScript).listen();
+    this.response.speak(speechOutput).listen();
     this.emit(':responseReady');
   },
 
-    // 'Unhandled': function () {
-    //     const speechOutput = this.t('TRIVIA_UNHANDLED', ANSWER_COUNT.toString());
-    //     this.emit(':ask', speechOutput, speechOutput);
-    // },
-
   /* CUSTOM INTENTS */
   'HelloIntent': function () {
-    this.response.speak("Hello? Can anyone hear me? Anyone.").listen();
-    this.emit(':responseReady');
-    // this.attributes.game.currentIntent = 'HelloIntent';
-    // this.emit('ParseIntent');
+    // this.response.speak("Hello? Can anyone hear me? Anyone.");
+    this.attributes.game.currentIntent = 'HelloIntent';
+    this.emit('ParseIntent');
   },
 }
 
@@ -253,4 +251,3 @@ exports.handler = function(event, context, callback){
     alexa.registerHandlers(handlers);
     alexa.execute();
 };
-
