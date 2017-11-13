@@ -6,7 +6,9 @@ const game_state = {
     START: 'START',
     RETURNING: 'RETURNING',
     GAME: 'GAME',
-    HELP: 'HELP'
+    HELP: 'HELP',
+    IGNORE: 'IGNORE',
+    REPEAT: 'REPEAT'
 }
 
 var belowScript = {
@@ -18,6 +20,12 @@ var belowScript = {
     },
     'HELP': {
         text: `I am not sure what you mean. Let me repeat myself here. `
+    },
+    'IGNORE': {
+        text: `I didn't catch that. `
+    },
+    'REPEAT': {
+        text: `Sorry I wasn't very clear. `
     },
     'FIRST': {
         text: `You're alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: Hello? `,
@@ -37,9 +45,6 @@ var belowScript = {
             }
         ]
     },
-    // {
-    //     text: `Please... Anyone`,
-    // },
     'OH_MY': {
         text: `Oh my god. Yes! Thank god.`,
         options: [
@@ -57,7 +62,7 @@ var belowScript = {
         text: `This is Jesse Harper. I'm a bioengineer currently training under Doctor Sloan Lee. But she's not doing very well. I'm not sure what's wrong with her`,
     },
     'SHE_SHE': {
-        text: `She- she's unconcious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
+        text: `She... she's unconcious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
     },
     'I_M': {
         text: `I'm not entirely sure. My captain She- she's unconcious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
@@ -182,18 +187,18 @@ var belowScript = {
 }
 
 var handlers = {
-  'LaunchRequest': function() {
-    if (Object.keys(this.attributes).length === 0) { // First time player
-      this.attributes.game = {
-        'state' : game_state.START,
-        'currentIndex' : 'FIRST',
-        'currentIntent' : ''
-      };
-    } else {
-        this.attributes.game.state = game_state.RETURNING;
-    }
-    this.emit('GenerateDialog');
-  },
+   'LaunchRequest': function() {
+        if (Object.keys(this.attributes).length === 0) { // First time player
+            this.attributes.game = {
+                'state' : game_state.START,
+                'currentIndex' : 'FIRST',
+                'currentIntent' : ''
+           };
+        } else {
+            this.attributes.game.state = game_state.RETURNING;
+        }
+        this.emit('GenerateDialog');
+   },
 
   // Check response and determine the next dialog
     'ParseIntent': function() {
@@ -213,45 +218,62 @@ var handlers = {
         }
     },
 
-  'GenerateDialog': function() {
-    var speechOutput = '';
+    'GenerateDialog': function() {
+        var speechOutput = '';
 
-    if (this.attributes.game.state != game_state.GAME) {
-        speechOutput += belowScript[this.attributes.game.state].text;
-        this.attributes.game.state = game_state.GAME;
+        if (this.attributes.game.state != game_state.GAME) {
+            speechOutput += belowScript[this.attributes.game.state].text;
+            this.attributes.game.state = game_state.GAME;
+        }
+
+        var currentIndex = this.attributes.game.currentIndex;
+        speechOutput += belowScript[currentIndex].text;
+
+        console.log('Reading script - ' + currentIndex);
+        this.response.speak(speechOutput).listen();
+        this.emit(':responseReady');
+    },
+
+    'IgnoreAction': function() {
+        this.attributes.game.state = game_state.IGNORE;
+        this.emit('GenerateDialog');
+        console.log('User ignored');
     }
 
-    var currentIndex = this.attributes.game.currentIndex;
-    speechOutput += belowScript[currentIndex].text;
-
-    console.log('Reading script - ' + currentIndex);
-    this.response.speak(speechOutput).listen();
-    this.emit(':responseReady');
-  },
-
+    'RepeatIntent': function() {
+        this.attributes.game.state = game_state.REPEAT;
+        this.emit('GenerateDialog');
+        console.log('User asks to repeat');
+    },
 
     'Unhandled': function() {
+        // this.attributes.game.state = game_state.HELP;
+        // this.emit('GenerateDialog');
+        // console.log('Unhandled');
+        this.emit('HelpIntent');
+    },
+
+    'HelpIntent': function() {
         this.attributes.game.state = game_state.HELP;
         this.emit('GenerateDialog');
         console.log('Unhandled');
     },
 
+    /* CUSTOM INTENTS */
+    'HelloIntent': function () {
+        this.attributes.game.currentIntent = 'HelloIntent';
+        this.emit('ParseIntent');
+    },
 
-  /* CUSTOM INTENTS */
-  'HelloIntent': function () {
-    this.attributes.game.currentIntent = 'HelloIntent';
-    this.emit('ParseIntent');
-  },
+    'AskSituation': function () {
+        this.attributes.game.currentIntent = 'AskSituation';
+        this.emit('ParseIntent');
+    },
 
-  'AskSituation': function () {
-    this.attributes.game.currentIntent = 'AskSituation';
-    this.emit('ParseIntent');
-  },
-
-  'AskWho': function () {
-    this.attributes.game.currentIntent = 'AskWho';
-    this.emit('ParseIntent');
-  },
+    'AskWho': function () {
+        this.attributes.game.currentIntent = 'AskWho';
+        this.emit('ParseIntent');
+    },
 
 }
 
