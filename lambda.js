@@ -200,14 +200,12 @@ var handlers = {
         this.emit('GenerateDialog');
    },
 
-  // Check response and determine the next dialog
+    // Check response and determine the next dialog
     'ParseIntent': function() {
         var intentName = this.attributes.game.currentIntent;
         var nextIndex = checkTrigger(intentName, this.attributes.game.currentIndex);
 
         if (nextIndex === undefined) { // Did not trigger the next dialog
-            // this.response.listen('I am not sure what you mean. What information do you want to know?');
-            // this.emit(':responseReady');
             this.attributes.game.state = game_state.HELP;
             this.emit('GenerateDialog');
             console.log('Failed to trigger');
@@ -246,15 +244,15 @@ var handlers = {
         console.log('User asks to repeat');
     },
 
-    'Unhandled': function() {
-        // this.attributes.game.state = game_state.HELP;
-        // this.emit('GenerateDialog');
-        // console.log('Unhandled');
-        this.emit('HelpIntent');
-    },
-
     'HelpIntent': function() {
         this.attributes.game.state = game_state.HELP;
+        this.emit('GenerateDialog');
+        console.log('HelpIntent');
+    },
+
+    // Unhandled only works when the script can be forwarded with 'anything'
+    'Unhandled': function() {
+        this.attributes.game.currentIntent = 'UnhandledIntent';
         this.emit('GenerateDialog');
         console.log('Unhandled');
     },
