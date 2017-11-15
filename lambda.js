@@ -9,7 +9,15 @@ const game_state = {
     HELP: 'HELP',
     IGNORE: 'IGNORE',
     REPEAT: 'REPEAT'
-}
+};
+
+const game_progress = {
+    PROLOGUE: 'PROLOGUE',
+    PART_1: 'PART_1',
+    PART_2: 'PART_2',
+    PART_3: 'PART_3',
+    EPILOGUE: 'EPILOGUE'
+};
 
 var belowScript = {
     'START': {
@@ -62,10 +70,10 @@ var belowScript = {
         text: `This is Jesse Harper. I'm a bioengineer currently training under Doctor Sloan Lee. But she's not doing very well. I'm not sure what's wrong with her`,
     },
     'SHE_SHE': {
-        text: `She... she's unconcious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
+        text: `She ... she's unconscious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
     },
     'I_M': {
-        text: `I'm not entirely sure. My captain She- she's unconcious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
+        text: `I'm not entirely sure. My captain She- she's unconscious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
     },
     'YEAH': {
         text: `Yeah, sorry. I need to explain myself more. This is Jesse Harper. I'm a bioengineer and Doctor Sloane Lee's apprentice, but, obviously, she's not doing very well. We're in a submarine, and our entire expedition has been underwater. For the past two weeks, we've been researching and trying to find growth of the medicinal plant, Selca Lexorium, and we think- or, I guess, we THOUGHT we finally found some, but something went wrong`,
@@ -184,13 +192,14 @@ var belowScript = {
     'DONT_SAY': {
         text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     }
-}
+};
 
 var handlers = {
    'LaunchRequest': function() {
         if (Object.keys(this.attributes).length === 0) { // First time player
             this.attributes.game = {
                 'state' : game_state.START,
+                'progress' : game_progress.PROLOGUE,
                 'currentIndex' : 'FIRST',
                 'currentIntent' : ''
            };
@@ -236,7 +245,7 @@ var handlers = {
         this.attributes.game.state = game_state.IGNORE;
         this.emit('GenerateDialog');
         console.log('User ignored');
-    }
+    },
 
     'RepeatIntent': function() {
         this.attributes.game.state = game_state.REPEAT;
@@ -253,8 +262,18 @@ var handlers = {
     // Unhandled only works when the script can be forwarded with 'anything'
     'Unhandled': function() {
         this.attributes.game.currentIntent = 'UnhandledIntent';
-        this.emit('GenerateDialog');
+        this.emit('ParseIntent');
         console.log('Unhandled');
+    },
+
+    'YesIntent': function () {
+        this.attributes.game.currentIntent = 'YesIntent';
+        this.emit('ParseIntent');
+    },
+
+    'NoIntent': function () {
+        this.attributes.game.currentIntent = 'NoIntent';
+        this.emit('ParseIntent');
     },
 
     /* CUSTOM INTENTS */
