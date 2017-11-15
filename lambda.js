@@ -48,28 +48,28 @@ var belowScript = {
         text: `Hello? Can anyone hear me? Please... Anyone.`,
         options: [
             {
-                next: 'OH_MY',
+                next: 'THANK_GOD',
                 triggers: ['anything']
             }
         ]
     },
-    'OH_MY': {
+    'THANK_GOD': {
         text: `Oh my god. Yes! Thank god.`,
         options: [
             {
-                next: 'SHE_SHE',
+                next: 'UNCONSCIOUS',
                 triggers: ['AskSituation']
             },
             {
-                next: 'THIS_IS',
+                next: 'SELF_INTRODUCTION',
                 triggers: ['AskWho']
             }
         ]
     },
-    'THIS_IS': {
+    'SELF_INTRODUCTION': {
         text: `This is Jesse Harper. I'm a bioengineer currently training under Doctor Sloan Lee. But she's not doing very well. I'm not sure what's wrong with her`,
     },
-    'SHE_SHE': {
+    'UNCONSCIOUS': {
         text: `She ... she's unconscious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
     },
     'I_M': {
@@ -197,16 +197,27 @@ var belowScript = {
 var handlers = {
    'LaunchRequest': function() {
         if (Object.keys(this.attributes).length === 0) { // First time player
+            this.attributes.state = game_state.START;
             this.attributes.game = {
-                'state' : game_state.START,
-                'progress' : game_progress.PROLOGUE,
+                // 'state' : game_state.START,
+                'progress' : {
+                    'state': game_progress.PROLOGUE,
+                },
                 'currentIndex' : 'FIRST',
                 'currentIntent' : ''
            };
         } else {
-            this.attributes.game.state = game_state.RETURNING;
+            // this.attributes.game.state = game_state.RETURNING;
+            this.attributes.state = game_state.RETURNING;
         }
         this.emit('GenerateDialog');
+   },
+
+   // Call a state machine that handled the decisions made by the players
+   'handleIntent': function() {
+        var currIntent = this.attributes.game.currentIntent;
+        this.attributes.game.progress = updateProgress(currIntent, this.attributes.game.progress);
+        // this.emit(ParseIntent);
    },
 
     // Check response and determine the next dialog
@@ -215,7 +226,7 @@ var handlers = {
         var nextIndex = checkTrigger(intentName, this.attributes.game.currentIndex);
 
         if (nextIndex === undefined) { // Did not trigger the next dialog
-            this.attributes.game.state = game_state.HELP;
+            this.attributes.state = game_state.HELP;
             this.emit('GenerateDialog');
             console.log('Failed to trigger');
         } else {
@@ -225,12 +236,13 @@ var handlers = {
         }
     },
 
+    // Get the next script and generate the response
     'GenerateDialog': function() {
         var speechOutput = '';
 
-        if (this.attributes.game.state != game_state.GAME) {
-            speechOutput += belowScript[this.attributes.game.state].text;
-            this.attributes.game.state = game_state.GAME;
+        if (this.attributes.state != game_state.GAME) {
+            speechOutput += belowScript[this.attributes.state].text;
+            this.attributes.state = game_state.GAME;
         }
 
         var currentIndex = this.attributes.game.currentIndex;
@@ -242,19 +254,19 @@ var handlers = {
     },
 
     'IgnoreAction': function() {
-        this.attributes.game.state = game_state.IGNORE;
+        this.attributes.state = game_state.IGNORE;
         this.emit('GenerateDialog');
         console.log('User ignored');
     },
 
     'RepeatIntent': function() {
-        this.attributes.game.state = game_state.REPEAT;
+        this.attributes.state = game_state.REPEAT;
         this.emit('GenerateDialog');
         console.log('User asks to repeat');
     },
 
     'HelpIntent': function() {
-        this.attributes.game.state = game_state.HELP;
+        this.attributes.state = game_state.HELP;
         this.emit('GenerateDialog');
         console.log('HelpIntent');
     },
@@ -266,6 +278,7 @@ var handlers = {
         console.log('Unhandled');
     },
 
+    /* CUSTOM INTENTS */
     'YesIntent': function () {
         this.attributes.game.currentIntent = 'YesIntent';
         this.emit('ParseIntent');
@@ -276,7 +289,6 @@ var handlers = {
         this.emit('ParseIntent');
     },
 
-    /* CUSTOM INTENTS */
     'HelloIntent': function () {
         this.attributes.game.currentIntent = 'HelloIntent';
         this.emit('ParseIntent');
@@ -294,6 +306,43 @@ var handlers = {
 
 }
 
+// Record player's new findings and update progress
+var updateProgress = function(intentName, progress) {
+    switch (progress) {
+        case game_progress.PROLOGUE:
+            return prologue(intentName, progress);
+        case game_progress.PART_1:
+            return part1(intentName, progress);
+        case game_progress.PART_2:
+            return part2(intentName, progress);
+        case game_progress.PART_3:
+            return part3(intentName, progress);
+        default:
+            return progress;
+    }
+}
+
+var prologue = function(intentName, progress) {
+
+    return progress;
+}
+
+var part1 = function(intentName, progress) {
+
+    return progress;
+}
+
+var part2 = function(intentName, progress) {
+
+    return progress;
+}
+
+var part3 = function(intentName, progress) {
+
+    return progress;
+}
+
+// Find the next dialog that will trigger by the intent
 var checkTrigger = function(intentName, currIndex) {
     console.log('Parsing intent: ' + intentName);
     var nextIndex;
