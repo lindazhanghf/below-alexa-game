@@ -40,6 +40,13 @@ var belowScript = {
     'END': {
         text: `You have finished the first chapter of the Below game. The second chapter is still under development. You can start over and uncover more stories below the surface.`
     },
+    'HELP': {
+        text: [
+            `You can ask questions like ... `,
+            `Try say something like ... `,
+            `Maybe say ... `
+        ]
+    },
     'FIRST': {
         text: `You're alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: Hello? `,
         options: [
@@ -63,13 +70,15 @@ var belowScript = {
         options: [
             {
                 next: 'UNCONSCIOUS',
-                triggers: ['AskSituation']
+                triggers: ['AskSituation'],
             },
             {
                 next: 'SELF_INTRODUCTION',
-                triggers: ['AskWho']
+                triggers: ['AskWho'],
+
             }
-        ]
+        ],
+        prompt: ` 'what is happening', or 'who are you'`
     },
     'SELF_INTRODUCTION': {
         text: `This is Jesse Harper. I'm a bioengineer currently training under Doctor Sloane Lee. But she's not doing very well. I'm not sure what's wrong with her`,
@@ -106,48 +115,74 @@ var belowScript = {
     },
     'THE_ILLEGALITY': {
         text: `The illegality makes our work seem worse than it actually is... Basically, exploration of this area of the trench is restricted. Only the government and the very specific researchers they select have access to this area`,
+        options: [
+            {
+                next: 'STOLE',
+                triggers: ['anything']
+            }
+        ]
     },
-    // 'ALSO': {
-    //     text: `Also... We stole some things`,
-    // },
-    // 'FROM': {
-    //     text: `From... the government`,
-    // },
-    // 'RESEARCH': {
-    //     text: `Research`,
-    // },
-    // 'EXPLAIN_RESEARCH': {
-    //     text: `I know! I know. But listen, someone's dig around in this place. What are they keeping from us down here? The rest of the Mariana's been relatively easy to get a permit for for decades. Especially for scientists with meaningful research like Doctor Lee! Once the Captain and I started our studies and realized that the Selcal Lexorium potentially originated from this area... Well, she's not really the type to let the law get in the way of scientific progress. Our research is for the greater good! We could help thousands`,
-    // },
-    // 'CAPTIAN.': {
-    //     text: `Captian. And doctor. Both. She's very intelligent and diversely qualified, okay? And now we've been talking too long. I should get back to her`,
-    // },
+    'STOLE': {
+        text: `Also... We stole some things`,
+        options: [
+            {
+                next: 'STOLE_FROM',
+                triggers: ['AskWho']
+            },
+            {
+                next: 'STOLE_RESEARCH',
+                triggers: ['AskWhat']
+            }
+        ]
+    },
+    'STOLE_FROM': {
+        text: `From... the government`,
+        options: [
+            {
+                next: 'EXPLAIN_RESEARCH',
+                triggers: ['AskSituation']
+            },
+            {
+                next: 'STOLE_RESEARCH',
+                triggers: ['AskWhat']
+            }
+        ]
+    },
+    'STOLE_RESEARCH': {
+        text: `Research`,
+        options: [
+            {
+                next: 'STOLE_FROM',
+                triggers: ['AskWho']
+            },
+            {
+                next: 'EXPLAIN_RESEARCH',
+                triggers: ['AskSituation']
+            }
+        ]
+    },
+    'EXPLAIN_RESEARCH': {
+        text: `I know! I know. But listen, someone's dig around in this place. What are they keeping from us down here? The rest of the Mariana's been relatively easy to get a permit for for decades. Especially for scientists with meaningful research like Doctor Lee! Once the Captain and I started our studies and realized that the Selcal Lexorium potentially originated from this area... Well, she's not really the type to let the law get in the way of scientific progress. Our research is for the greater good! We could help thousands`,
+        options: [
+            {
+                next: 'CAPTAIN',
+                triggers: ['AskWho']
+            }
+        ]
+    },
+    'CAPTIAN': {
+        text: `She is a captain. And doctor. Both. She's very intelligent and diversely qualified, okay? And now we've been talking too long. I should get back to her`,
+        options: [
+            {
+                next: 'HER_SITUATION',
+                triggers: ['anything']
+            }
+        ]
+    },
+    'HER_SITUATION': {
+        text: `She's still on the ground right now. I dragged her out of the airlock and removed her helmet. Once she was inside, I tried calling for help. We're lucky you responded`,
+    },
 
-
-    // 'I_M': {
-    //     text: `I'm not entirely sure. My captain She- she's unconscious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
-    // },
-    // 'YEAH': {
-    //     text: `Yeah, sorry. I need to explain myself more. This is Jesse Harper. I'm a bioengineer and Doctor Sloane Lee's apprentice, but, obviously, she's not doing very well. We're in a submarine, and our entire expedition has been underwater. For the past two weeks, we've been researching and trying to find growth of the medicinal plant, Selca Lexorium, and we think- or, I guess, we THOUGHT we finally found some, but something went wrong`,
-    // },
-    // 'AH_RIGHT': {
-    //     text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice, but, obviously, she's not doing very well. We've been doing research and trying to find growth of the medicinal plant, Selca Lexorium, for the past 2 weeks. We think- or, I guess, we THOUGHT we finally found some, so Captain Lee left the sub to collect some samples, but something went wrong.`,
-    // },
-    // 'YEAH_SORRY': {
-    //     text: `Yeah, sorry. I'm not explaining everything too clearly. We're in a submarine, and our entire expedition has been underwater. We've been researching and trying to find growth of the medicinal plant, Selca Lexorium, for the past 2 weeks, and we think- or, I guess, we THOUGHT we finally found some, but something went wrong.`,
-    // },
-    // 'WE_VE': {
-    //     text: `We've been doing research and trying to find growth of the medicinal plant, Selca Lexorium, for the past 2 weeks. We think- or, I guess, we THOUGHT we finally found some, so Captain Lee left the sub to collect some samples, but something went wrong`,
-    // },
-    // 'YEAH_LIKE': {
-    //     text: `Yeah. Like short for submarine. Our entire expedition has been underwater`,
-    // },
-    // 'THE_MARIANA': {
-    //     text: `The Mariana Trench, actually... Our project is pretty huge and also, kind of, well`,
-    // },
-    // 'SHE_S': {
-    //     text: `She's still on the ground right now. I dragged her out of the airlock and removed her helmet. Once she was inside, I tried calling for help. We're lucky you responded`,
-    // },
     // 'I_CAN': {
     //     text: `I can, but she's still in her pressurized suit. It's really heavy, so I'll need to remove it first`,
     // },
@@ -277,6 +312,11 @@ var handlers = {
         console.log('User asks to repeat');
     },
 
+    'NextIntent': function() {
+        this.attributes.game.currentIntent = 'NextIntent';
+        this.emit('handleIntent');
+    },
+
     'HelpIntent': function() {
         this.attributes.game.state = game_state.UNHANDLED; // TODO Change to prompt user the suggestions
         this.emit('GenerateDialog');
@@ -308,7 +348,9 @@ var handlers = {
 
     'AskSituation': function () {
         this.attributes.game.currentIntent = 'AskSituation';
+        this.attributes.game.progress.slot = this.event.request.intent.slots.she.value;
         this.emit('handleIntent');
+        console.log('Asking about: ' + this.event.request.intent.slots.she.value);
     },
 
     'AskWho': function () {
@@ -377,7 +419,26 @@ var prologue = function(game) {
 }
 
 var part1 = function(game) {
-    if (belowScript[game.currentIndex].options) { // Has options
+    let slot = game.progress.slot;
+    if (game.currentIndex == 'KIND_OF_ILLEGAL') { // Last dialog: exploration
+        switch(game.currentIntent) {
+            case 'AskWhere':
+                if (slot == 'she') {
+                    game.currentIndex = 'HER_SITUATION';
+                }
+                break;
+            case 'AskSituation':
+                if (slot == 'she') {
+                    game.currentIndex = 'HER_SITUATION';
+                } else {
+                    game.currentIndex = 'THE_ILLEGALITY';
+                }
+                break;
+            // case 'Special_Illegal': TODO!!!!!!!
+            default:
+                game = setUnhandled(game);
+        }
+    } else if (belowScript[game.currentIndex].options) { // Has options
         var nextIndex = checkTrigger(game.currentIntent, game.currentIndex);
 
         if (nextIndex === undefined) { // Did not trigger the next dialog
@@ -388,7 +449,6 @@ var part1 = function(game) {
         }
 
     } else { // No options, proceed dialogs by asking questions
-        let slot = game.progress.slot;
         switch (game.currentIntent) {
             case 'AskWho':
                 game.progress.who = true;
@@ -432,12 +492,12 @@ var part1 = function(game) {
     }
 
     // Enter part 2
-    if (false) {
+    if (game.currentIndex == 'HER_SITUATION') {
         game.state = game_state.PART_2;
         var askedResearch = game.progress.research;
-        game = {
+        game.progress = {
+            'slot': '',
             'research': askedResearch,
-            // MORE here
         }
     }
 
