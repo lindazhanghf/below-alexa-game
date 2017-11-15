@@ -67,17 +67,17 @@ var belowScript = {
     },
     'THANK_GOD': {
         text: `Oh my god. Yes! Thank god. I was about to give up. It was terrible...`, //Or "This terrible situation..."
-        options: [
-            {
-                next: 'UNCONSCIOUS',
-                triggers: ['AskSituation'],
-            },
-            {
-                next: 'SELF_INTRODUCTION',
-                triggers: ['AskWho'],
+        // options: [
+        //     {
+        //         next: 'UNCONSCIOUS',
+        //         triggers: ['AskSituation'],
+        //     },
+        //     {
+        //         next: 'SELF_INTRODUCTION',
+        //         triggers: ['AskWho'],
 
-            }
-        ],
+        //     }
+        // ],
         prompt: ` 'what is happening', or 'who are you'`
     },
     'SELF_INTRODUCTION': {
@@ -93,7 +93,7 @@ var belowScript = {
         text: `For the past two weeks, we've been doing research and trying to find growth of the medicinal plant, Selca Lexorium, for the past 2 weeks. We think- or, I guess, we THOUGHT we finally found some, so Captain Lee left the sub to collect some samples, but something went wrong.`
     },
     'NEED_INTRODUCTION': { // When Jesse forgot to introduce himself at first
-        text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice, but, obviously, she's not doing very well. `,
+        text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice, but, obviously, she's not doing very well. Also ...`,
         options: [
             {
                 next: 'EXPLORATION',
@@ -162,16 +162,25 @@ var belowScript = {
         ]
     },
     'EXPLAIN_RESEARCH': {
-        text: `I know! I know. But listen, someone's dig around in this place. What are they keeping from us down here? The rest of the Mariana's been relatively easy to get a permit for for decades. Especially for scientists with meaningful research like Doctor Lee! Once the Captain and I started our studies and realized that the Selcal Lexorium potentially originated from this area... Well, she's not really the type to let the law get in the way of scientific progress. Our research is for the greater good! We could help thousands`,
+        text: `I know! I know. But listen, someone's dig around in this place. What are they keeping from us down here? The rest of the Mariana's been relatively easy to get a permit for for decades. Especially for scientists with meaningful research like Doctor Lee! Once the Captain and I started our studies and realized that the Selcal Lexorium potentially originated from this area... Well, she's not really the type to let the law get in the way of scientific progress. Our research is for the greater good! We could help thousands.`,
         options: [
             {
-                next: 'CAPTAIN',
-                triggers: ['AskWho']
+                next: 'CONTINUE_SITUATION',
+                triggers: ['anything']
             }
         ]
     },
-    'CAPTIAN': {
-        text: `She is a captain. And doctor. Both. She's very intelligent and diversely qualified, okay? And now we've been talking too long. I should get back to her`,
+    'EXPLAIN_HER': {
+        text: `Doctor Sloane Lee is a captain. And doctor. Both. She's very intelligent and diversely qualified.`,
+        // options: [
+        //     {
+        //         next: 'HER_SITUATION',
+        //         triggers: ['anything']
+        //     }
+        // ]
+    },
+    'CONTINUE_SITUATION': {
+        text: `And now we've been talking too long. I should get back to her. She's still on the ground right now. I dragged her out of the airlock and removed her helmet. Once she was inside, I tried calling for help. We're lucky you responded`,
         options: [
             {
                 next: 'HER_SITUATION',
@@ -290,7 +299,7 @@ var handlers = {
         var currentIndex = this.attributes.game.currentIndex;
 
         if (this.attributes.game.state != game_state.GAME) {
-            console.log('Before GenerateDialog: ' + this.attributes.game.state + '. Then ' + belowScript[currentIndex]);
+            console.log('Before GenerateDialog: ' + this.attributes.game.state + '. Then ' + currentIndex);
             speechOutput += belowScript[this.attributes.game.state].text;
             this.attributes.game.state = game_state.GAME;
         }
@@ -371,6 +380,11 @@ var handlers = {
         this.emit('handleIntent');
         console.log('Asking about: ' + this.event.request.intent.slots.person.value);
     } ,
+
+    'Special_Illegal': function() {
+        this.attributes.game.currentIntent = 'Special_Illegal';
+        this.emit('handleIntent');
+    },
 }
 
 // Record player's new findings and update progress
@@ -421,6 +435,7 @@ var prologue = function(game) {
 var part1 = function(game) {
     let slot = game.progress.slot;
     if (game.currentIndex == 'KIND_OF_ILLEGAL') { // Last dialog: exploration
+        // let slot_result = checkCharacterSlot(slot);
         switch(game.currentIntent) {
             case 'AskWhere':
                 if (slot == 'she') {
@@ -428,21 +443,27 @@ var part1 = function(game) {
                 }
                 break;
             case 'AskSituation':
+                console.log('PART 1 - KIND_OF_ILLEGAL: slot = ' + slot);
                 if (slot == 'she') {
                     game.currentIndex = 'HER_SITUATION';
                 } else {
                     game.currentIndex = 'THE_ILLEGALITY';
                 }
                 break;
-            // case 'Special_Illegal': TODO!!!!!!!
+            case 'Special_Illegal':
+                game.currentIndex = 'THE_ILLEGALITY';
+                break;
             default:
-                game = setUnhandled(game);
+                game.state = game_state.UNHANDLED;
+                // game = setUnhandled(game);
+                break;
         }
     } else if (belowScript[game.currentIndex].options) { // Has options
         var nextIndex = checkTrigger(game.currentIntent, game.currentIndex);
 
-        if (nextIndex === undefined) { // Did not trigger the next dialog
-            game = setUnhandled(game);
+        if (nextIndex === undefined) { //
+            game.state = game_state.UNHANDLED; //Did not trigger the next dialog
+            // game = setUnhandled(game);
         } else {
             game.currentIndex = nextIndex;
             console.log('Part 1 - next script : ' + nextIndex);
@@ -455,21 +476,24 @@ var part1 = function(game) {
                 game.currentIndex = 'SELF_INTRODUCTION';
                 break;
             case 'AskSituation':
+                console.log('PART 1 - Asking about situation');
                 game.progress.situation = true;
                 game.currentIndex = 'UNCONSCIOUS';
                 break;
             case 'AskWhat':
-                console.log('Asking about : ' + slot);
-                if (slot == 'air lock' || slot == 'submarine' || slot == 'lock') {
+                console.log('PART 1 - Asking about : ' + slot);
+                let slot_result = checkItemSlot(slot);
+                if (slot_result == 'airLock') {
                     game.progress.airLock = true;
                     game.currentIndex = 'EXPLAIN_SUBMARINE';
-                } else if (slot == 'sample' || slot == 'research') {
+                } else if (slot_result == 'sample') {
                     game.progress.samples = true;
                     game.currentIndex = 'EXPLAIN_SAMPLE';
                 } else {
-                    game = setUnhandled(game);
+                    game.state = game_state.UNHANDLED;
+                    // game = setUnhandled(game);
                 }
-                game.progress.slot = '';
+                // game.progress.slot = '';
                 break;
             case 'AskWhere':
                 let p = game.progress;
@@ -482,7 +506,8 @@ var part1 = function(game) {
                     game.progress.exploration = true;
                     game.currentIndex = 'EXPLORATION';
                 } else {
-                    game = setUnhandled(game);
+                    game.state = game_state.UNHANDLED;
+                    // game = setUnhandled(game);
                 }
                 break;
             default:
@@ -490,10 +515,11 @@ var part1 = function(game) {
                 break;
         }
     }
+    game.progress.slot = ''; // Clear out slot value
 
     // Enter part 2
     if (game.currentIndex == 'HER_SITUATION') {
-        game.state = game_state.PART_2;
+        game.progressIndex = game_progress.PART_2;
         var askedResearch = game.progress.research;
         game.progress = {
             'slot': '',
@@ -533,6 +559,103 @@ var setUnhandled = function(game_obj) {
     game_obj.state = game_state.UNHANDLED;
     console.log('Failed to trigger');
     return game_obj;
+}
+
+var checkCharacterSlot = function(input_slot) {
+    const character = {
+        "name": "Character",
+        "values": [
+          {
+            "id": "Lee",
+            "name": {
+              "value": "Lee",
+              "synonyms": [
+                "Her",
+                "She",
+                "Sloane",
+                "Doctor Lee",
+                "Doctor",
+                "Captain"
+              ]
+            }
+          },
+          {
+            "id": "Jesse",
+            "name": {
+              "value": "Jesse",
+              "synonyms": [
+                "Jesse",
+                "You",
+                "Harper",
+                "Jesse Harper"
+              ]
+            }
+          }
+        ]
+      };
+    let slotID = findSlotID(input_slot, character);
+    console.log('PARSING SLOT - result: ' + slotID);
+    return slotID;
+}
+
+var checkItemSlot = function(input_slot) {
+    // const item = {
+    //     "name": "Item",
+    //     "values": [
+    //       {
+    //         "id": "sample",
+    //         "name": {
+    //           "value": "sample",
+    //           "synonyms": [
+    //             "research"
+    //           ]
+    //         }
+    //       },
+    //       {
+    //         "id": "airLock",
+    //         "name": {
+    //           "value": "air lock",
+    //           "synonyms": [
+    //             "lock",
+    //             "submarine",
+    //             "sub"
+    //           ]
+    //         }
+    //       },
+    //       {
+    //         "id": "firstAid",
+    //         "name": {
+    //           "value": "first aid",
+    //           "synonyms": [
+    //             "emergency kit",
+    //             "health kit",
+    //             "medical kit",
+    //             "first aid kit"
+    //           ]
+    //         }
+    //       }
+    //     ]
+    //   };   
+    // let slotID = findSlotID(input_slot, item);
+    // console.log('PARSING SLOT - result: ' + slotID);
+    // return slotID;
+    if (input_slot == 'air lock' || input_slot == 'submarine' || input_slot == 'lock')
+        return 'airLock';
+    else if (input_slot == 'sample' || input_slot == 'samples' || input_slot == 'research')
+        return 'sample';
+    return;
+}
+
+var findSlotID = function(input_slot, slot_obj) {
+    console.log('PARSING SLOT - ' + input_slot);
+    slot_obj.values.forEach( function(slot_type) {
+        // console.log('slot_type.id = ' + slot_type.id);
+        if (input_slot.toUpperCase() === slot_type.name.value.toUpperCase()) return slot_type.id;
+        slot_type.name.synonyms.forEach( (slot) => {
+            if (input_slot == slot) return slot_type.id;
+        })
+    });
+    return;
 }
 
 exports.handler = function(event, context, callback){
