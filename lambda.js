@@ -44,9 +44,11 @@ var belowScript = {
         text: [
             `You can ask questions like ... `,
             `Try say something like ... `,
-            `Maybe say ... `
+            `Maybe try ... `
         ]
     },
+
+    /* PROLOGUE */
     'FIRST': {
         text: `You're alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: Hello? `,
         options: [
@@ -65,21 +67,27 @@ var belowScript = {
             }
         ]
     },
+
+    /* PART 1 */
     'THANK_GOD': {
         text: `Oh my god. Yes! Thank god. I was about to give up. It was terrible...`, //Or "This terrible situation..."
         prompt: ` 'what is happening', or 'who are you'`
     },
     'SELF_INTRODUCTION': {
         text: `This is Jesse Harper. I'm a bioengineer currently training under Doctor Sloane Lee. But she's not doing very well. I'm not sure what's wrong with her`,
+        prompt: ``,
     },
     'UNCONSCIOUS': {
         text: `I'm not entirely sure. My captain she ... she's unconscious. She went out for samples, and it was only supposed to be 45 minutes, but she was gone for two hours. When she got back, she was weak and collapsed in the air lock`,
+        prompt: ``,
     },
     'EXPLAIN_SUBMARINE': {
-        text: `We're in a submarine, and our entire expedition has been underwater.`
+        text: `We're in a submarine, and our entire expedition has been underwater.`,
+        prompt: ``,
     },
     'EXPLAIN_SAMPLE': {
         text: `For the past two weeks, we've been doing research and trying to find growth of the medicinal plant, Selca Lexorium. We think- or, I guess, we THOUGHT we finally found some, so Captain Lee left the sub to collect some samples, but something went wrong.`
+        prompt: ``,
     },
     'NEED_INTRODUCTION': { // When Jesse forgot to introduce himself at first
         text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice. We are exploring The Mariana Trench actually... Our project is pretty huge and also, kind of, well...`,
@@ -88,7 +96,8 @@ var belowScript = {
                 next: 'KIND_OF_ILLEGAL',
                 triggers: ['anything']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'EXPLORATION': {
         text: `Actually, We are exploring The Mariana Trench... Our project is pretty huge and also, kind of, well...`,
@@ -97,10 +106,12 @@ var belowScript = {
                 next: 'KIND_OF_ILLEGAL',
                 triggers: ['anything']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'KIND_OF_ILLEGAL': {
         text: `Kind of illegal. But listen, you can ask me more questions later. Right now, I'm worried about Captain Lee`,
+        prompt: ``,
     },
     'THE_ILLEGALITY': {
         text: `The illegality makes our work seem worse than it actually is... Basically, exploration of this area of the trench is restricted. Only the government and the very specific researchers they select have access to this area`,
@@ -109,7 +120,8 @@ var belowScript = {
                 next: 'STOLE',
                 triggers: ['anything']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'STOLE': {
         text: `Also... We stole some things`,
@@ -122,7 +134,8 @@ var belowScript = {
                 next: 'STOLE_RESEARCH',
                 triggers: ['AskWhat']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'STOLE_FROM': {
         text: `From... the government`,
@@ -135,7 +148,8 @@ var belowScript = {
                 next: 'STOLE_RESEARCH',
                 triggers: ['AskWhat']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'STOLE_RESEARCH': {
         text: `Research`,
@@ -148,7 +162,8 @@ var belowScript = {
                 next: 'EXPLAIN_RESEARCH',
                 triggers: ['AskSituation']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'EXPLAIN_RESEARCH': {
         text: `I know! I know. But listen, someone's dig around in this place. What are they keeping from us down here? The rest of the Mariana's been relatively easy to get a permit for for decades. Especially for scientists with meaningful research like Doctor Lee! Once the Captain and I started our studies and realized that the Selcal Lexorium potentially originated from this area... Well, she's not really the type to let the law get in the way of scientific progress. Our research is for the greater good! We could help thousands.`,
@@ -157,7 +172,8 @@ var belowScript = {
                 next: 'CONTINUE_SITUATION',
                 triggers: ['anything']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'EXPLAIN_HER': {
         text: `Doctor Sloane Lee is a captain. And doctor. Both. She's very intelligent and diversely qualified.`,
@@ -181,7 +197,8 @@ var belowScript = {
                 next: 'PRESSURIZED_SUIT',
                 triggers: ['Command_Remove']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'HER_SITUATION': {
         text: `She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
@@ -194,7 +211,8 @@ var belowScript = {
                 next: 'PRESSURIZED_SUIT',
                 triggers: ['Command_Remove']
             }
-        ]
+        ],
+        prompt: ``,
     },
     'BREATH': {
         text: `Of course she is breathing! Don't you think I'd be more panicked if my only companion down here wasn't breathing? Well, I guess she's not my ONLY companion, because now you're helping me. Anyway, first thing first, should I move her to her bed? `,
@@ -203,7 +221,8 @@ var belowScript = {
                 next: 'TRY_MOVE',
                 triggers: ['YesIntent', 'Command_Move', 'NextIntent']
             },
-        ]
+        ],
+        prompt: ``,
     },
     'TRY_MOVE': {   // ... After a moment of trying, hard work sound, failed
         text: `Alright, give me a sec while I try moving her ... she's still in her pressurized suit. It's really heavy, so I'll need to remove it first. What do you think? `,
@@ -212,7 +231,8 @@ var belowScript = {
                 next: 'PRESSURIZED_SUIT',
                 triggers: ['YesIntent', 'Command_Remove', 'NextIntent']
             },
-        ]
+        ],
+        prompt: ``,
     },
     'PRESSURIZED_SUIT': {
         text: `Oh no, something is stuck inside the zipper, Agh! I might have to make an incision in order to peel this off her. Is it worth it? `,
@@ -221,19 +241,24 @@ var belowScript = {
                 next: 'INCISION',
                 triggers: ['YesIntent', 'NextIntent']
             },
-        ]
+        ],
+        prompt: ``,
     },
     'INCISION': { // zipper sound, or cutting cloths sound, grossed out voice
         text: `Alright. I’m going in from the side...but it smells kind of...odd. Oh god, this is gross`,
+        prompt: ``,
     },
     'IT_LOOKS': {
         text: `It looks dark and moldy, Some of it's on her skin! This looks horrible. We need to do something about it`,
+        prompt: ``,
     },
     'IT_SMELLS': {
         text: `It smells like moldy death- like something's been decaying on the inside of this suit for a really long time. It's not possible though, because she was only gone for two hours. This is bad. We need to hurry`,
+        prompt: ``,
     },
     'GUESS_PLANT': { // INFO
         text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`
+        prompt: ``,
     },
     'PEEL_OFF': {
         text: `You’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
@@ -242,7 +267,8 @@ var belowScript = {
                 next: 'END',
                 triggers: ['anything']
             },
-        ]
+        ],
+        prompt: ``,
     },
     'RISK_LIFE': {
         text: `She’d be willing to risk her life for me, so I have to do the same. I’m going to pull the rest of her suit off by making an incision on the other side`,
@@ -251,43 +277,11 @@ var belowScript = {
                 next: 'END',
                 triggers: ['anything']
             },
-        ]
+        ],
+        prompt: ``,
     },
 
-
-    // 'I_CAN': {
-    //     text: `I can, but she's still in her pressurized suit. It's really heavy, so I'll need to remove it first`,
-    // },
-    // 'OF_COURSE': {
-    //     text: `Of course she is! Don't you think I'd be more panicked if my only companion down here wasn't breathing? Well, I guess she's not my ONLY companion, because now you're helping me`,
-    // },
-    // 'WELL_THIS': {
-    //     text: `Well this situation isn't particularly calming`,
-    // },
-    // 'ALRIGHT': {
-    //     text: `Alright, I think I'm going to try to get her out of the suit. She should be moved to the bed, but this suit's way to huge to lift her in.`,
-    // },
-    // 'LET_ME': {
-    //     text: `Let me see what I can do`,
-    // },
-    // 'I_AM': {
-    //     text: `I'm not too sure... I think there might be something wrong with it. It's definitely not helping her. Trust me on this`,
-    // },
-    // 'THE_SUIT’S': {
-    //     text: `The suit’s so heavy! Agh! I might have to make an incision in order to peel this off her. Is it worth it`,
-    // },
-    // 'ALRIGHT.': {
-    //     text: `Alright. I’m going in from the side...but it smells kind of...odd. I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow. Oh god, this is gross`,
-    // },
-    // 'OH_GOD': {
-    //     text: `Oh god, you’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
-    // },
-    // 'RISK_LIFE': {
-    //     text: `She’d be willing to risk her life for me, so I have to do the same. I’m going to pull the rest of her suit off by making an incision on the other side`,
-    // },
-    // 'FINALLY GOT': {
-    //     text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin`,
-    // },
+    /* PART 3 */
     // 'YEAH_LET': {
     //     text: `Yeah, let me grab it`,
     // },
@@ -327,6 +321,7 @@ var belowScript = {
 };
 
 
+
 var handlers = {
    'LaunchRequest': function() {
         if (Object.keys(this.attributes).length === 0) { // First time player
@@ -354,15 +349,24 @@ var handlers = {
     // Get the next script and generate the response
     'GenerateDialog': function() {
         var speechOutput = '';
-        var currentScript = this.attributes.game.currentScript;
+        var currScript = this.attributes.game.currentScript;
+
+        if (this.attributes.game.state == game_state.HELP) {
+            let index = Math.floor(Math.random() * belowScript.HELP.text.length);
+            speechOutput += belowScript.HELP.text[index];
+            speechOutput += belowScript[currScript].prompt;
+            this.response.speak(speechOutput).listen();
+            this.emit(':responseReady');
+            return;
+        }
 
         if (this.attributes.game.state != game_state.GAME) {
-            console.log('Before GenerateDialog: ' + this.attributes.game.state + '. Then ' + currentScript);
+            console.log('Before GenerateDialog: ' + this.attributes.game.state + '. Then ' + currScript);
             speechOutput += belowScript[this.attributes.game.state].text;
             this.attributes.game.state = game_state.GAME;
         }
 
-        speechOutput += belowScript[currentScript].text;
+        speechOutput += belowScript[currScript].text;
         this.response.speak(speechOutput).listen();
         this.emit(':responseReady');
     },
@@ -379,15 +383,17 @@ var handlers = {
         console.log('User asks to repeat');
     },
 
+    'AMAZON.HelpIntent': function() {
+        this.attributes.game.state = game_state.HELP;
+        this.emit('GenerateDialog');
+        // this.attributes.game.currentIntent = 'HelpIntent';
+        // this.emit('handleIntent');
+        console.log('AMAZON.HelpIntent');
+    },
+
     'AMAZON.NextIntent': function() {
         this.attributes.game.currentIntent = 'NextIntent';
         this.emit('handleIntent');
-    },
-
-    'AMAZON.HelpIntent': function() {
-        this.attributes.game.state = game_state.UNHANDLED; // TODO Change to prompt user the suggestions
-        this.emit('GenerateDialog');
-        console.log('HelpIntent');
     },
 
     // Unhandled only works when the dialog can be forwarded with 'anything'
