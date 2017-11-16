@@ -174,6 +174,28 @@ var belowScript = {
     'HER_SITUATION': {
         text: `She's still on the ground right now. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
     },
+    'BREATH': {
+        text: `Of course she is breathing! Don't you think I'd be more panicked if my only companion down here wasn't breathing? Well, I guess she's not my ONLY companion, because now you're helping me. Okay, first thing first, should I move her to her bed? `,
+    },
+    'TRY_MOVE': {   // ... After a moment of trying, hard work sound, failed
+        text: `Alright, give me a sec while I try moving her ... she's still in her pressurized suit. It's really heavy, so I'll need to remove it first. What do you think? `,
+    },
+    'PRESSURIZED_SUIT': {
+        text: `Oh no, something is stuck inside the zipper, Agh! I might have to make an incision in order to peel this off her. Is it worth it? `,
+    },
+    'INCISION': { // zipper sound, or cutting cloths sound, grossed out voice
+        text: `Alright. I’m going in from the side...but it smells kind of...odd. Oh god, this is gross`,
+    },
+    'IT_LOOKS': {
+        text: `It looks dark and moldy, Some of it's on her skin! This looks horrible. We need to hurry`,
+    },
+    'IT_SMELLS': {
+        text: `It smells like moldy death- like something's been decaying on the inside of this suit for a really long time. It's not possible though, because she was only gone for two hours. This is bad. We need to hurry`,
+    },
+    'GUESS_PLANT': { // INFO
+        text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`
+    },
+
 
     // 'I_CAN': {
     //     text: `I can, but she's still in her pressurized suit. It's really heavy, so I'll need to remove it first`,
@@ -198,12 +220,6 @@ var belowScript = {
     // },
     // 'ALRIGHT.': {
     //     text: `Alright. I’m going in from the side...but it smells kind of...odd. I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow. Oh god, this is gross`,
-    // },
-    // 'IT_LOOKS': {
-    //     text: `It looks dark and moldy, like something's been decaying on the inside of this suit for a really long time. It's not possible though, because she was only gone for two hours. This is bad. We need to hurry`,
-    // },
-    // 'IT_SMELLS': {
-    //     text: `It smells like moldy death- like something's been decaying on the inside of this suit for a really long time. It's not possible though, because she was only gone for two hours. This is bad. We need to hurry`,
     // },
     // 'OH_GOD': {
     //     text: `Oh god, you’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
@@ -251,7 +267,6 @@ var belowScript = {
     //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     // }
 };
-
 
 var handlers = {
    'LaunchRequest': function() {
@@ -374,6 +389,21 @@ var handlers = {
         this.attributes.game.currentIntent = 'Special_Help';
         this.emit('handleIntent');
     },
+
+    'Special_Breath': function() {
+        this.attributes.game.currentIntent = 'Special_Breath';
+        this.emit('handleIntent');
+    },
+
+    'Command_Remove': function() {
+        this.attributes.game.currentIntent = 'Command_Remove';
+        this.emit('handleIntent');
+    },
+
+    'Command_Move': function() {
+        this.attributes.game.currentIntent = 'Command_Move';
+        this.emit('handleIntent');
+    },
 }
 
 // Record player's new findings and update progress
@@ -393,15 +423,16 @@ var updateProgress = function(game_obj) {
 }
 
 var prologue = function(game) {
-    var nextIndex = checkTrigger(game.currentIntent, game.currentScript);
+    // var nextIndex = nextDialog(game.currentIntent, game.currentScript);
 
-    if (nextIndex === undefined) { // Did not trigger the next dialog
-        this.attributes.game.state = game_state.UNHANDLED;
-        console.log('Failed to trigger');
-    } else {
-        game.currentScript = nextIndex;
-        console.log('Prologue - next script : ' + nextIndex);
-    }
+    // if (nextIndex === undefined) { // Did not trigger the next dialog
+    //     this.attributes.game.state = game_state.UNHANDLED;
+    //     console.log('Failed to trigger');
+    // } else {
+    //     game.currentScript = nextIndex;
+    //     console.log('Prologue - next script : ' + nextIndex);
+    // }
+    game = nextDialog(game);
 
     // Enter part 1
     if (nextIndex == 'THANK_GOD') {
@@ -453,15 +484,16 @@ var part1 = function(game) {
                 break;
         }
     } else if (belowScript[game.currentScript].options) { // Has options
-        var nextIndex = checkTrigger(game.currentIntent, game.currentScript);
+        game = nextDialog(game);
+        // var nextIndex = nextDialog(game.currentIntent, game.currentScript);
 
-        if (nextIndex === undefined) { //
-            game.state = game_state.UNHANDLED; //Did not trigger the next dialog
-            // game = setUnhandled(game);
-        } else {
-            game.currentScript = nextIndex;
-            console.log('Part 1 - next script : ' + nextIndex);
-        }
+        // if (nextIndex === undefined) { //
+        //     game.state = game_state.UNHANDLED; //Did not trigger the next dialog
+        //     // game = setUnhandled(game);
+        // } else {
+        //     game.currentScript = nextIndex;
+        //     console.log('Part 1 - next script : ' + nextIndex);
+        // }
 
     } else { // No options, proceed dialogs by asking questions
         switch (game.currentIntent) {
@@ -516,19 +548,41 @@ var part1 = function(game) {
     // game.progress.slot = ''; // Clear out slot value
 
     // Enter part 2
-    if (game.currentScript == 'HER_SITUATION') {
+    if (game.currentScript == 'HER_SITUATION' || game.currentScript == 'CONTINUE_SITUATION') {
         game.progressIndex = game_progress.PART_2;
+        game.progress['redness'] = 0;
         // var askedResearch = game.progress.research;
         // game.progress = {
         //     'slot': '',
         //     'research': askedResearch,
         // }
     }
-
     return game;
 }
 
 var part2 = function(game) {
+    // switch (game.currentScript) {
+
+    // }
+
+    // switch (game.currentIntent) {
+    //     case 'Special_Breath':
+    //         game.currentScript = 'BREATH';
+    //         break;
+    //     case 'Command_Move':
+    //         game.currentScript = 'TRY_MOVE';
+    //         game.progress['move'] = true;
+    //         break;
+    //     case 'Command_Remove':
+    //         game.currentScript = 'PRESSURIZED_SUIT';
+    //         break;
+    //     default:
+    //         if (belowScript[game.currentScript].options) { // Has options
+
+    //         } else {
+    //             game.state = game_state.UNHANDLED; //Did not trigger the next dialog
+    //         }
+    // }
 
     return game;
 }
@@ -539,18 +593,25 @@ var part3 = function(game) {
 }
 
 // Find the next dialog that will trigger by the intent
-var checkTrigger = function(intentName, currIndex) {
+var nextDialog = function(game) {
+    let intentName = game.currentIntent;
     console.log('Checking tigger for: ' + intentName);
     var nextIndex;
-    belowScript[currIndex].options.forEach( function(option) {
+    belowScript[game.currentScript].options.forEach( function(option) {
         option.triggers.forEach( function(trigger) {
             if (trigger === 'anything' || intentName == trigger) {
                 nextIndex = option.next;
             }
         })
     });
+    if (nextIndex === undefined) { //
+        game.state = game_state.UNHANDLED; //Did not trigger the next dialog
+    } else {
+        game.currentScript = nextIndex;
+        console.log('nextDialog - next script : ' + nextIndex);
+    }
 
-    return nextIndex;
+    return game;
 }
 
 var setUnhandled = function(game_obj) {
