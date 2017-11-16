@@ -23,7 +23,7 @@ const game_progress = {
 
 var belowScript = {
     'START': {
-        text: `Welcome to below game, you can pause this game anytime by saying exit and your progress will be saved. `
+        text: `Welcome to below game, an interactive narrative game you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
     },
     'RETURNING': {
         text: `Welcome back to below game, you can restart the game by saying start over. `
@@ -331,7 +331,7 @@ var handlers = {
             this.attributes.game = {
                 'state': game_state.START,
                 'progressIndex': game_progress.PROLOGUE,
-                'progress': {},
+                // 'progress': {},
                 'currentScript' : 'FIRST',
                 'currentIntent' : ''
            };
@@ -384,7 +384,7 @@ var handlers = {
             'currentIntent' : ''
         };
         this.emit('GenerateDialog');
-    }
+    },
 
     'AMAZON.IgnoreAction': function() {
         this.attributes.game.state = game_state.IGNORE;
@@ -417,6 +417,12 @@ var handlers = {
         this.emit('handleIntent');
         console.log('Unhandled');
     },
+
+    // // Save state
+    // 'SessionEndedRequest': function() {
+    //     console.log('session ended!');
+    //     this.emit(':saveState', true);
+    // },
 
     /* CUSTOM INTENTS */
     'YesIntent': function () {
@@ -746,43 +752,6 @@ var checkCharacterSlot = function(input_slot) {
 }
 
 var checkItemSlot = function(input_slot) {
-    // const item = {
-    //     "name": "Item",
-    //     "values": [
-    //       {
-    //         "id": "sample",
-    //         "name": {
-    //           "value": "sample",
-    //           "synonyms": [
-    //             "research"
-    //           ]
-    //         }
-    //       },
-    //       {
-    //         "id": "airLock",
-    //         "name": {
-    //           "value": "air lock",
-    //           "synonyms": [
-    //             "lock",
-    //             "submarine",
-    //             "sub"
-    //           ]
-    //         }
-    //       },
-    //       {
-    //         "id": "firstAid",
-    //         "name": {
-    //           "value": "first aid",
-    //           "synonyms": [
-    //             "emergency kit",
-    //             "health kit",
-    //             "medical kit",
-    //             "first aid kit"
-    //           ]
-    //         }
-    //       }
-    //     ]
-    //   };
     // let slotID = findSlotID(input_slot, item);
     // console.log('PARSING SLOT - result: ' + slotID);
     // return slotID;
@@ -807,6 +776,7 @@ var findSlotID = function(input_slot, slot_obj) {
 
 exports.handler = function(event, context, callback){
     var alexa = Alexa.handler(event, context);
+    // alexa.dynamoDBTableName = 'BelowGame';
     alexa.registerHandlers(handlers);
     alexa.execute();
 };

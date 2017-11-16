@@ -1,6 +1,6 @@
 var belowScript = {
     'START': {
-        text: `Welcome to below game, you can pause this game anytime by saying exit and your progress will be saved. `
+        text: `Welcome to below game, an interactive narrative game you play by having a conversation with a person on the other side of the radio. You can always say 'I need help' if you are stuck. `
     },
     'RETURNING': {
         text: `Welcome back to below game, you can restart the game by saying start over. `
