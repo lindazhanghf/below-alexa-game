@@ -168,32 +168,68 @@ var belowScript = {
         //     }
         // ]
     },
+
+    /* PART 2 */
     'CONTINUE_SITUATION': {
-        text: `And now we've been talking too long. I should get back to her. She's still on the ground right now. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
+        text: `And now we've been talking too long. I should get back to her. She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
     },
     'HER_SITUATION': {
-        text: `She's still on the ground right now. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
+        text: `She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
     },
     'BREATH': {
         text: `Of course she is breathing! Don't you think I'd be more panicked if my only companion down here wasn't breathing? Well, I guess she's not my ONLY companion, because now you're helping me. Okay, first thing first, should I move her to her bed? `,
+        options: [
+            {
+                next: 'TRY_MOVE',
+                triggers: ['YesIntent', 'Command_Move', 'NextIntent']
+            },
+        ]
     },
     'TRY_MOVE': {   // ... After a moment of trying, hard work sound, failed
         text: `Alright, give me a sec while I try moving her ... she's still in her pressurized suit. It's really heavy, so I'll need to remove it first. What do you think? `,
+        options: [
+            {
+                next: 'PRESSURIZED_SUIT',
+                triggers: ['YesIntent', 'Command_Remove', 'NextIntent']
+            },
+        ]
     },
     'PRESSURIZED_SUIT': {
         text: `Oh no, something is stuck inside the zipper, Agh! I might have to make an incision in order to peel this off her. Is it worth it? `,
+        options: [
+            {
+                next: 'INCISION',
+                triggers: ['YesIntent', 'NextIntent']
+            },
+        ]
     },
     'INCISION': { // zipper sound, or cutting cloths sound, grossed out voice
         text: `Alright. I’m going in from the side...but it smells kind of...odd. Oh god, this is gross`,
     },
     'IT_LOOKS': {
-        text: `It looks dark and moldy, Some of it's on her skin! This looks horrible. We need to hurry`,
+        text: `It looks dark and moldy, Some of it's on her skin! This looks horrible. We need to do something about it`,
     },
     'IT_SMELLS': {
         text: `It smells like moldy death- like something's been decaying on the inside of this suit for a really long time. It's not possible though, because she was only gone for two hours. This is bad. We need to hurry`,
     },
     'GUESS_PLANT': { // INFO
         text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`
+    },
+    'PEEL_OFF': {
+        text: `Oh god, you’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
+        options: [
+            {
+                next: 'STOLE_FROM',
+                triggers: ['AskWho']
+            },
+            {
+                next: 'EXPLAIN_RESEARCH',
+                triggers: ['AskSituation']
+            }
+        ]
+    },
+    'RISK_LIFE': {
+        text: `She’d be willing to risk her life for me, so I have to do the same. I’m going to pull the rest of her suit off by making an incision on the other side`,
     },
 
 
@@ -224,7 +260,7 @@ var belowScript = {
     // 'OH_GOD': {
     //     text: `Oh god, you’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
     // },
-    // 'SHED_BE': {
+    // 'RISK_LIFE': {
     //     text: `She’d be willing to risk her life for me, so I have to do the same. I’m going to pull the rest of her suit off by making an incision on the other side`,
     // },
     // 'FINALLY GOT': {
@@ -267,6 +303,7 @@ var belowScript = {
     //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     // }
 };
+
 
 var handlers = {
    'LaunchRequest': function() {
@@ -423,19 +460,10 @@ var updateProgress = function(game_obj) {
 }
 
 var prologue = function(game) {
-    // var nextIndex = nextDialog(game.currentIntent, game.currentScript);
-
-    // if (nextIndex === undefined) { // Did not trigger the next dialog
-    //     this.attributes.game.state = game_state.UNHANDLED;
-    //     console.log('Failed to trigger');
-    // } else {
-    //     game.currentScript = nextIndex;
-    //     console.log('Prologue - next script : ' + nextIndex);
-    // }
     game = nextDialog(game);
 
     // Enter part 1
-    if (nextIndex == 'THANK_GOD') {
+    if (game.currentScript == 'THANK_GOD') {
         game.progressIndex = game_progress.PART_1;
         // Setting up for part 1
         game.progress = {
@@ -480,21 +508,10 @@ var part1 = function(game) {
                 break;
             default:
                 game.state = game_state.UNHANDLED;
-                // game = setUnhandled(game);
                 break;
         }
     } else if (belowScript[game.currentScript].options) { // Has options
         game = nextDialog(game);
-        // var nextIndex = nextDialog(game.currentIntent, game.currentScript);
-
-        // if (nextIndex === undefined) { //
-        //     game.state = game_state.UNHANDLED; //Did not trigger the next dialog
-        //     // game = setUnhandled(game);
-        // } else {
-        //     game.currentScript = nextIndex;
-        //     console.log('Part 1 - next script : ' + nextIndex);
-        // }
-
     } else { // No options, proceed dialogs by asking questions
         switch (game.currentIntent) {
             case 'AskWho':
@@ -517,9 +534,7 @@ var part1 = function(game) {
                     game.currentScript = 'EXPLAIN_SAMPLE';
                 } else {
                     game.state = game_state.UNHANDLED;
-                    // game = setUnhandled(game);
                 }
-                // game.progress.slot = '';
                 break;
             case 'AskWhere':
                 if (!game.progress.askedWhere) { // 1st time asking where
@@ -545,45 +560,112 @@ var part1 = function(game) {
                 break;
         }
     }
-    // game.progress.slot = ''; // Clear out slot value
 
     // Enter part 2
     if (game.currentScript == 'HER_SITUATION' || game.currentScript == 'CONTINUE_SITUATION') {
         game.progressIndex = game_progress.PART_2;
-        game.progress['redness'] = 0;
-        // var askedResearch = game.progress.research;
-        // game.progress = {
-        //     'slot': '',
-        //     'research': askedResearch,
-        // }
     }
     return game;
 }
 
 var part2 = function(game) {
-    // switch (game.currentScript) {
+    let currIntent = game.currentIntent;
+    if (currIntent == 'Special_Breath' || currIntent == 'AskSituation') {
+        if (game.progress['redness'] === undefined) {
+            game.progress['redness'] = 0;
+            game.currentScript = 'BREATH';
+        } else {
+            switch (game.progress['redness']) {
+                case 0:
+                    game.currentScript = 'FACE_NORMAL';
+                    return game;
+                case 1:
+                    game.currentScript = 'FACE_RED';
+                    return game;
+                case 2:
+                    game.currentScript = 'FACE_PURPLE';
+                    return game;
+                default:
+                    game.currentScript = 'OH_NO';
+            }
+        }
+        return game;
+    }
 
-    // }
+    switch (game.currentScript) {
+        case 'IT_LOOKS':
+        case 'IT_SMELLS':
+            if (currIntent == 'AskWhat' && game.progress.slot != 'smell' && game.progress.slot != 'look') {
+                game.currentScript = 'GUESS_PLANT';
+            }
+        case 'INCISION':
+            if (currIntent == 'AskWhat' && game.progress.slot == 'smell') {
+                game.currentScript = 'IT_SMELLS';
+            } else if ((currIntent == 'AskWhat' && game.progress.slot == 'look') || currIntent == 'AskSituation') {
+                game.currentScript = 'IT_LOOKS';
+            } else if (currIntent == 'Command_Remove') {
+                game.currentScript = 'PEEL_OFF';
+            } else {
+                game.state = game_state.UNHANDLED;
+            }
+        return game;
+    }
 
-    // switch (game.currentIntent) {
-    //     case 'Special_Breath':
-    //         game.currentScript = 'BREATH';
-    //         break;
-    //     case 'Command_Move':
-    //         game.currentScript = 'TRY_MOVE';
-    //         game.progress['move'] = true;
-    //         break;
-    //     case 'Command_Remove':
-    //         game.currentScript = 'PRESSURIZED_SUIT';
-    //         break;
-    //     default:
-    //         if (belowScript[game.currentScript].options) { // Has options
-
-    //         } else {
-    //             game.state = game_state.UNHANDLED; //Did not trigger the next dialog
+    // if (game.currentScript == 'INCISION') {
+    //     if (currIntent == 'AskWhat') {
+    //         switch (game.progress.slot) {
+    //             case 'smell':
+    //                 game.currentScript = 'IT_SMELLS';
+    //                 return game;
+    //             case 'look':
+    //                 game.currentScript = 'IT_LOOKS';
+    //                 return game;
+    //             default:
+    //                 break;
     //         }
+    //     } else if (currIntent == 'AskSituation') {
+    //         game.currentScript = 'IT_LOOKS';
+    //         return game;
+    //     }
+    //     game.state = game_state.UNHANDLED;
+    //     return game;
     // }
 
+    // if (game.currentScript == 'IT_SMELLS' || game.currentScript == 'IT_LOOKS') {
+    //     switch (currIntent){
+    //         case 'AskWhat':
+    //             if (game.progress.slot == 'smell') {
+    //                 game.currentScript = 'IT_SMELLS';
+    //             } else if (game.progress.slot == 'look') {
+    //                 game.currentScript = 'IT_LOOKS';
+    //             } else {
+    //                 game.currentScript = 'GUESS_PLANT';
+    //             }
+    //             return game;
+    //         case 'Command_Remove':
+    //             game.currentScript = 'PEEL_OFF';
+    //             return game;
+    //         default:
+    //             game.state = game_state.UNHANDLED;
+    //     }
+    //     return game;
+    // }
+
+    // switch (game.currentScript) {
+    //     case 'CONTINUE_SITUATION':
+    //     case 'HER_SITUATION':
+    //         switch(currIntent) {
+
+    //         }
+    //         break;
+    //     case 'INCISION':
+
+    //         break;
+    //     case 'BREATH':
+    //     case 'TRY_MOVE':
+    //     case 'PRESSURIZED_SUIT':
+    //     default:
+    game = nextDialog(game);
     return game;
 }
 
@@ -592,7 +674,7 @@ var part3 = function(game) {
     return game;
 }
 
-// Find the next dialog that will trigger by the intent
+// Find the next dialog that will trigger by the current intent
 var nextDialog = function(game) {
     let intentName = game.currentIntent;
     console.log('Checking tigger for: ' + intentName);
