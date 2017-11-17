@@ -1,6 +1,7 @@
+
 var belowScript = {
     'START': {
-        text: `Welcome to below game, an interactive narrative game you play by having a conversation with a person on the other side of the radio. You can always say 'I need help' if you are stuck. `
+        text: `Welcome to below game, an interactive narrative game you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
     },
     'RETURNING': {
         text: `Welcome back to below game, you can restart the game by saying start over. `
@@ -162,7 +163,7 @@ var belowScript = {
         //         triggers: ['anything']
         //     }
         // ]
-        prompt: ``,
+        prompt: ,
     },
 
     /* PART 2 */
@@ -185,7 +186,7 @@ var belowScript = {
         options: [
             {
                 next: 'TRY_MOVE',
-                triggers: ['Command_Move']
+                triggers: ['Command_Mo']
             },
             {
                 next: 'PRESSURIZED_SUIT',
@@ -202,7 +203,7 @@ var belowScript = {
                 triggers: ['YesIntent', 'Command_Move', 'NextIntent']
             },
         ],
-        prompt: ` 'Good idea' or Don't move her that much`, // TODO not moving her
+        prompt: ` 'Good idea' or Don't move her that much`,
     },
     'TRY_MOVE': {   // ... After a moment of trying, hard work sound, failed
         text: `Alright, give me a sec while I try moving her ... she's still in her pressurized suit. It's really heavy, so I'll need to remove it first. What do you think? `,
@@ -222,7 +223,7 @@ var belowScript = {
                 triggers: ['YesIntent', 'NextIntent']
             },
         ],
-        prompt: ` 'go ahead' or 'stop!'`, // TODO stop
+        prompt: ` 'go ahead' or 'stop!'`,
     },
     'INCISION': { // zipper sound, or cutting cloths sound, grossed out voice
         text: `Alright. I’m going in from the side...but it smells kind of...odd. Oh god, this is gross`,
@@ -244,7 +245,7 @@ var belowScript = {
         text: `You’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
         options: [
             {
-                next: 'END',
+                next: 'GROWTH_SKIN',
                 triggers: ['anything']
             },
         ],
@@ -254,7 +255,7 @@ var belowScript = {
         text: `She’d be willing to risk her life for me, so I have to do the same. I’m going to pull the rest of her suit off by making an incision on the other side`,
         options: [
             {
-                next: 'END',
+                next: 'GROWTH_SKIN',
                 triggers: ['anything']
             },
         ],
@@ -262,30 +263,38 @@ var belowScript = {
     },
 
     /* PART 3 */
-    // 'YEAH_LET': {
-    //     text: `Yeah, let me grab it`,
-    // },
-    // 'OKAY': {
-    //     text: `Okay, so we have the standard first aid stuff. I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
-    // },
-    // 'SO_I': {
-    //     text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shit, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
-    // },
-    // 'WOW_DOCTOR': {
-    //     text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
-    // },
-    // 'THE_DIRECTIONS': {
-    //     text: `The directions- Okay, wow there's directions but no proper label. Nice. It says to use a syringe to inject the liquid into her bloodstream around the affected area starting with 3mL. Increase dosage if needed? She wrote an acutal question mark in the directions`,
-    // },
-    // 'OH_MAN': {
-    //     text: `Oh man. If she dies, it's on her. But also, I really, really hope she lives. Here goes nothing`,
-    // },
-    // 'OH_SHIT': {
-    //     text: `Oh, shit. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
-    // },
-    // 'WAIT': {
-    //     text: `Wait, I think you’re right! The redness is reducing all the bumps. It's working`,
-    // },
+    'GROWTH_SKIN': {
+        text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
+        prompt: ` 'Do you have a medical kit?'`
+        options: [
+            {
+                next: 'GRAB_MEDICAL',
+                triggers: ['']
+            },
+            {
+                next: 'MEDICAL_KIT',
+                triggers: ['Command_Help']
+            }
+        ],
+    },
+    'GRAB_MEDICAL': {
+        text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+    },
+    'MEDICAL_KIT': {
+        text: `Right, I almost forgot we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+    },
+    'SO_I': {
+        text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shit, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
+    },
+    'OTHER_BOTTOLES': {
+        text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
+    },
+    'OH_SHIT': {
+        text: `Oh, shit. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
+    },
+    'WAIT': {
+        text: `Wait, I think you’re right! The redness is reducing all the bumps. It's working`,
+    },
     // 'OH_PLEASE': {
     //     text: `Oh, please. I did all the work. You're just on the other side of the radio`,
     // },
@@ -298,4 +307,5 @@ var belowScript = {
     // 'DONT_SAY': {
     //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     // }
+
 };
