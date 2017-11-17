@@ -1,4 +1,3 @@
-
 var belowScript = {
     'START': {
         text: `Welcome to below game, an interactive narrative game you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
@@ -163,7 +162,7 @@ var belowScript = {
         //         triggers: ['anything']
         //     }
         // ]
-        prompt: ,
+        prompt: '',
     },
 
     /* PART 2 */
@@ -265,11 +264,11 @@ var belowScript = {
     /* PART 3 */
     'GROWTH_SKIN': {
         text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
-        prompt: ` 'Do you have a medical kit?'`
+        prompt: ` 'Do you have a medical kit?'`,
         options: [
             {
                 next: 'GRAB_MEDICAL',
-                triggers: ['']
+                triggers: ['Command_Item']
             },
             {
                 next: 'MEDICAL_KIT',
@@ -307,5 +306,5 @@ var belowScript = {
     // 'DONT_SAY': {
     //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     // }
-
 };
+

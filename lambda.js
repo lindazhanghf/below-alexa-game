@@ -2,6 +2,8 @@
 
 var Alexa = require("alexa-sdk");
 
+const isDebug = true;
+
 const game_state = {
     START: 'START',
     RETURNING: 'RETURNING',
@@ -20,8 +22,6 @@ const game_progress = {
     EPILOGUE: 'EPILOGUE',
     END: 'END'
 };
-
-
 var belowScript = {
     'START': {
         text: `Welcome to below game, an interactive narrative game you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
@@ -186,7 +186,7 @@ var belowScript = {
         //         triggers: ['anything']
         //     }
         // ]
-        prompt: ,
+        prompt: '',
     },
 
     /* PART 2 */
@@ -288,11 +288,11 @@ var belowScript = {
     /* PART 3 */
     'GROWTH_SKIN': {
         text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
-        prompt: ` 'Do you have a medical kit?'`
+        prompt: ` 'Do you have a medical kit?'`,
         options: [
             {
                 next: 'GRAB_MEDICAL',
-                triggers: ['']
+                triggers: ['Command_Item']
             },
             {
                 next: 'MEDICAL_KIT',
@@ -333,16 +333,89 @@ var belowScript = {
 };
 
 
+const characters = [
+  {
+    "id": "Lee",
+    "name": {
+      "value": "Lee",
+      "synonyms": [
+        "Her",
+        "She",
+        "Sloane",
+        "Doctor Lee",
+        "Doctor",
+        "Captain"
+      ]
+    }
+  },
+  {
+    "id": "Jesse",
+    "name": {
+      "value": "Jesse",
+      "synonyms": [
+        "Jesse",
+        "You",
+        "Harper",
+        "Jesse Harper"
+      ]
+    }
+  }
+];
+
+const items = [
+  {
+    "id": "sample",
+    "name": {
+      "value": "sample",
+      "synonyms": [
+        "research",
+        "samples"
+      ]
+    }
+  },
+  {
+    "id": "airLock",
+    "name": {
+      "value": "air lock",
+      "synonyms": [
+        "lock",
+        "submarine",
+        "sub"
+      ]
+    }
+  },
+  {
+    "id": "firstAid",
+    "name": {
+      "value": "first aid",
+      "synonyms": [
+        "emergency kit",
+        "health kit",
+        "medical kit",
+        "first aid kit"
+      ]
+    }
+  }
+];
+
+
 var handlers = {
    'LaunchRequest': function() {
         if (Object.keys(this.attributes).length === 0) { // First time player
             this.attributes.game = {
                 'state': game_state.START,
                 'progressIndex': game_progress.PROLOGUE,
-                // 'progress': {},
                 'currentScript' : 'FIRST',
                 'currentIntent' : ''
-           };
+            };
+            if (isDebug) {
+                this.attributes.game = {
+                    'state': game_state.GAME,
+                    'progressIndex': game_progress.PART_3,
+                    'currentScript' : 'GROWTH_SKIN',
+                    'currentIntent' : ''
+                }
+            }
         } else {
             this.attributes.game.state = game_state.RETURNING;
         }
@@ -506,7 +579,7 @@ var handlers = {
         this.attributes.game.slot = this.event.request.intent.slots.item.value;
         this.attributes.game.currentIntent = 'Command_Item';
         this.emit('handleIntent');
-    };
+    },
 }
 
 // Record player's new findings and update progress
@@ -700,7 +773,7 @@ var part2 = function(game) {
 var part3 = function(game) {
 
     if (game.currentIntent == 'Command_Item') {
-
+        console.log('Part 3 - slot: ' + checkItemSlot(game.slot));
     }
 
     return game;
@@ -735,62 +808,34 @@ var setUnhandled = function(game_obj) {
 }
 
 var checkCharacterSlot = function(input_slot) {
-    const character = {
-        "name": "Character",
-        "values": [
-          {
-            "id": "Lee",
-            "name": {
-              "value": "Lee",
-              "synonyms": [
-                "Her",
-                "She",
-                "Sloane",
-                "Doctor Lee",
-                "Doctor",
-                "Captain"
-              ]
-            }
-          },
-          {
-            "id": "Jesse",
-            "name": {
-              "value": "Jesse",
-              "synonyms": [
-                "Jesse",
-                "You",
-                "Harper",
-                "Jesse Harper"
-              ]
-            }
-          }
-        ]
-      };
-    let slotID = findSlotID(input_slot, character);
+    let slotID = findSlotID(input_slot, characters);
     console.log('PARSING SLOT - result: ' + slotID);
     return slotID;
 }
 
 var checkItemSlot = function(input_slot) {
-    // let slotID = findSlotID(input_slot, item);
-    // console.log('PARSING SLOT - result: ' + slotID);
-    // return slotID;
-    if (input_slot == 'air lock' || input_slot == 'submarine' || input_slot == 'lock' || input_slot == 'sub')
-        return 'airLock';
-    else if (input_slot == 'sample' || input_slot == 'samples' || input_slot == 'research')
-        return 'sample';
-    return;
+    let slotID = findSlotID(input_slot, items);
+    console.log('PARSING SLOT - result: ' + slotID);
+    return slotID;
+    // if (input_slot == 'air lock' || input_slot == 'submarine' || input_slot == 'lock' || input_slot == 'sub')
+    //     return 'airLock';
+    // else if (input_slot == 'sample' || input_slot == 'samples' || input_slot == 'research')
+    //     return 'sample';
+    // return;
 }
 
-var findSlotID = function(input_slot, slot_obj) {
-    console.log('PARSING SLOT - ' + input_slot);
-    slot_obj.values.forEach( function(slot_type) {
-        // console.log('slot_type.id = ' + slot_type.id);
-        if (input_slot.toUpperCase() === slot_type.name.value.toUpperCase()) return slot_type.id;
-        slot_type.name.synonyms.forEach( (slot) => {
-            if (input_slot == slot) return slot_type.id;
-        })
-    });
+var findSlotID = function(input_slot, slots) {
+    console.log('PARSING SLOT - input: ' + input_slot);
+    for (var i = 0; i < slots.length; i++) {
+        if (input_slot.toUpperCase() === slots[i].name.value.toUpperCase()) {
+            return slots[i].id;
+        }
+        for (var j = 0; j < slots[i].name.synonyms.length; j++) {
+            if (input_slot.toUpperCase() === slots[i].name.synonyms[j].toUpperCase()) {
+                return slots[i].id;
+            }
+        }
+    }
     return;
 }
 
