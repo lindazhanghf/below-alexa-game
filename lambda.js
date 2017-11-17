@@ -22,6 +22,7 @@ const game_progress = {
     EPILOGUE: 'EPILOGUE',
     END: 'END'
 };
+
 var belowScript = {
     'START': {
         text: `Welcome to below game, an interactive narrative game you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
@@ -261,7 +262,7 @@ var belowScript = {
         prompt: ` 'we have to get rid of that'`,
     },
     'GUESS_PLANT': { // INFO
-        text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
+        text: `I think- shoot. I think she found exactly what we were trying to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of research on any of them given where they all grow.`,
         prompt: ` 'we should remove it at once'`,
     },
     'PEEL_OFF': {
@@ -289,28 +290,35 @@ var belowScript = {
     'GROWTH_SKIN': {
         text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
         prompt: ` 'Do you have a medical kit?'`,
-        options: [
-            {
-                next: 'GRAB_MEDICAL',
-                triggers: ['Command_Item']
-            },
-            {
-                next: 'MEDICAL_KIT',
-                triggers: ['Command_Help']
-            }
-        ],
+        // options: [
+        //     {
+        //         next: 'GRAB_MEDICAL',
+        //         triggers: ['Command_Item']
+        //     },
+        //     {
+        //         next: 'MEDICAL_KIT',
+        //         triggers: ['Command_Help']
+        //     }
+        // ],
     },
     'GRAB_MEDICAL': {
         text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
     },
+    'BUT_MEDICAL': {
+        text: `Hmmmmm, I'm not sure if I have that. But I just realized we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+    },
     'MEDICAL_KIT': {
         text: `Right, I almost forgot we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
     },
-    'SO_I': {
+    'ANTISEPTIC_WIPES': {
+        text: `I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+        reprompt: ` What should I use? The antiseptic wipes, or the other bottles?`,
+    },
+    'USE_ANTISEPTIC': {
         text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shit, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
     },
     'OTHER_BOTTOLES': {
-        text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
+        text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
     },
     'OH_SHIT': {
         text: `Oh, shit. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
@@ -330,7 +338,15 @@ var belowScript = {
     // 'DONT_SAY': {
     //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     // }
+    'REPEAT_GUESS': { // prob say, yeah you are right, cusins thus use this bottle
+        text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
+    }
 };
+
+
+
+
+
 
 // Using the same code as in languageModel
 const characters = [
@@ -357,6 +373,24 @@ const characters = [
         "You",
         "Harper",
         "Jesse Harper"
+      ]
+    }
+  }
+];
+const senses = [
+  {
+    "id": "smell",
+    "name": {
+      "value": "smell",
+      "synonyms": []
+    }
+  },
+  {
+    "id": "look",
+    "name": {
+      "value": "look",
+      "synonyms": [
+        "see"
       ]
     }
   }
@@ -390,30 +424,45 @@ const items = [
       "synonyms": [
         "emergency kit",
         "health kit",
+        "first aid kit",
+        "medicine",
         "medical kit",
-        "first aid kit"
+        "medical supply"
       ]
-    }
-  }
-];
-const senses = [
-  {
-    "id": "smell",
-    "name": {
-      "value": "smell",
-      "synonyms": []
     }
   },
   {
-    "id": "look",
+    "id": "antiseptic",
     "name": {
-      "value": "look",
+      "value": "antiseptic",
       "synonyms": [
-        "see"
+        "wipes",
+        "antiseptic wipes"
+      ]
+    }
+  },
+  {
+    "id": "selca",
+    "name": {
+      "value": "Selca",
+      "synonyms": [
+        "medicinal plant",
+        "cousin"
+      ]
+    }
+  },
+  {
+    "id": "plant",
+    "name": {
+      "value": "plant",
+      "synonyms": [
+        "moldy",
+        "dark"
       ]
     }
   }
 ];
+
 
 var handlers = {
    'LaunchRequest': function() {
@@ -421,6 +470,8 @@ var handlers = {
             this.attributes.game = {
                 'state': game_state.START,
                 'progressIndex': game_progress.PROLOGUE,
+                'progress': {},
+                'slot': '',
                 'currentScript' : 'FIRST',
                 'currentIntent' : ''
             };
@@ -428,6 +479,8 @@ var handlers = {
                 this.attributes.game = {
                     'state': game_state.GAME,
                     'progressIndex': game_progress.PART_3,
+                    'progress': {},
+                    'slot': '',
                     'currentScript' : 'GROWTH_SKIN',
                     'currentIntent' : ''
                 }
@@ -462,7 +515,7 @@ var handlers = {
         }
 
         if (this.attributes.game.state != game_state.GAME) {
-            console.log('Before GenerateDialog: ' + this.attributes.game.state + '. Then ' + currScript);
+            console.log('GenerateDialog: ' + this.attributes.game.state + ' + ' + currScript);
             speechOutput += belowScript[this.attributes.game.state].text;
             this.attributes.game.state = game_state.GAME;
         }
@@ -727,7 +780,7 @@ var part1 = function(game) {
 
 var part2 = function(game) {
     let currIntent = game.currentIntent;
-    if (currIntent == 'Special_Breath' || currIntent == 'AskSituation') {
+    if (currIntent == 'Special_Breath' || (currIntent == 'AskSituation' && findSlotID(game.slot, characters) == 'Lee')) {
         if (!game.progress['askedBreath']) {
             game.currentScript = 'BREATH';
             game.progress.askedBreath = true;
@@ -758,6 +811,8 @@ var part2 = function(game) {
         case 'IT_SMELLS':
             if (currIntent == 'AskWhat' && slot_result != 'smell' && slot_result != 'look') {
                 game.currentScript = 'GUESS_PLANT';
+                game.progress.guessPlant = true;
+                return game;
             }
         case 'INCISION':
             if (currIntent == 'AskWhat' && slot_result == 'smell') {
@@ -788,8 +843,29 @@ var part2 = function(game) {
 }
 
 var part3 = function(game) {
-    if (game.currentIntent == 'Command_Item') {
-        let slot_result = findSlotID(game.slot, items);
+    if (game.currentIntent == 'AskWhat' && findSlotID(game.slot, items) == 'plant') {
+        game.currentScript = (game.progress.guessPlant == true) ? 'REPEAT_GUESS' : 'GUESS_PLANT';
+    }
+
+    switch (game.currentScript) {
+        case 'GROWTH_SKIN':
+            if (game.currentIntent == 'Command_Item') {
+                game.currentScript = (findSlotID(game.slot, items) == 'firstAid') ? 'GRAB_MEDICAL' : 'BUT_MEDICAL';
+            } else if (game.currentIntent == 'Command_Help') {
+                game.currentScript = 'MEDICAL_KIT';
+            }
+            break;
+        case 'ANTISEPTIC_WIPES':
+            if (game.currentIntent == 'Command_Item') {
+                game.currentScript = (findSlotID(game.slot, items) == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES';
+            }
+            break;
+        case 'OTHER_BOTTOLES':
+            if (game.currentIntent == 'Command_Item') {
+                game.currentScript = (findSlotID(game.slot, items) == 'selca') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES';
+            }
+        default:
+            break;
     }
 
     return game;
@@ -823,30 +899,22 @@ var setUnhandled = function(game_obj) {
     return game_obj;
 }
 
-// var checkCharacterSlot = function(input_slot) {
-//     let slotID = findSlotID(input_slot, characters);
-//     console.log('PARSING SLOT - result: ' + slotID);
-//     return slotID;
-// }
-
-// var checkItemSlot = function(input_slot) {
-//     let slotID = findSlotID(input_slot, items);
-//     console.log('PARSING SLOT - result: ' + slotID);
-//     return slotID;
-// }
-
 var findSlotID = function(input_slot, slots) {
     console.log('PARSING SLOT - input: ' + input_slot);
-    for (var i = 0; i < slots.length; i++) {
-        if (input_slot.toUpperCase() === slots[i].name.value.toUpperCase()) {
-            return slots[i].id;
-        }
-        for (var j = 0; j < slots[i].name.synonyms.length; j++) {
-            if (input_slot.toUpperCase() === slots[i].name.synonyms[j].toUpperCase()) {
+    if (input_slot) {
+        for (var i = 0; i < slots.length; i++) {
+            console.log('PARSING SLOT - check name: ' + slots[i].name.value);
+            if (input_slot.toUpperCase() === slots[i].name.value.toUpperCase()) {
                 return slots[i].id;
+            }
+            for (var j = 0; j < slots[i].name.synonyms.length; j++) {
+                if (input_slot.toUpperCase() === slots[i].name.synonyms[j].toUpperCase()) {
+                    return slots[i].id;
+                }
             }
         }
     }
+    console.log('PARSING SLOT - result: not found');
     return;
 }
 

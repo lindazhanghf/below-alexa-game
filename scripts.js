@@ -237,7 +237,7 @@ var belowScript = {
         prompt: ` 'we have to get rid of that'`,
     },
     'GUESS_PLANT': { // INFO
-        text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
+        text: `I think- shoot. I think she found exactly what we were trying to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of research on any of them given where they all grow.`,
         prompt: ` 'we should remove it at once'`,
     },
     'PEEL_OFF': {
@@ -265,28 +265,35 @@ var belowScript = {
     'GROWTH_SKIN': {
         text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
         prompt: ` 'Do you have a medical kit?'`,
-        options: [
-            {
-                next: 'GRAB_MEDICAL',
-                triggers: ['Command_Item']
-            },
-            {
-                next: 'MEDICAL_KIT',
-                triggers: ['Command_Help']
-            }
-        ],
+        // options: [
+        //     {
+        //         next: 'GRAB_MEDICAL',
+        //         triggers: ['Command_Item']
+        //     },
+        //     {
+        //         next: 'MEDICAL_KIT',
+        //         triggers: ['Command_Help']
+        //     }
+        // ],
     },
     'GRAB_MEDICAL': {
         text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
     },
+    'BUT_MEDICAL': {
+        text: `Hmmmmm, I'm not sure if I have that. But I just realized we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+    },
     'MEDICAL_KIT': {
         text: `Right, I almost forgot we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
     },
-    'SO_I': {
+    'ANTISEPTIC_WIPES': {
+        text: `I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+        reprompt: ` What should I use? The antiseptic wipes, or the other bottles?`,
+    },
+    'USE_ANTISEPTIC': {
         text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shit, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
     },
     'OTHER_BOTTOLES': {
-        text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
+        text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
     },
     'OH_SHIT': {
         text: `Oh, shit. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
@@ -306,5 +313,8 @@ var belowScript = {
     // 'DONT_SAY': {
     //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     // }
+    'REPEAT_GUESS': { // prob say, yeah you are right, cusins thus use this bottle
+        text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
+    }
 };
 
