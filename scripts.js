@@ -264,6 +264,7 @@ var belowScript = {
     /* PART 3 */
     'GROWTH_SKIN': {
         text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
+        reprompt: ` What should I do? There could be some medical supplys laying around.`,
         prompt: ` 'Do you have a medical kit?'`,
         // options: [
         //     {
@@ -292,15 +293,34 @@ var belowScript = {
     },
     'USE_ANTISEPTIC': {
         text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shoot, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
+        reprompt: ` Maybe we should see the other bottles`,
+        prompt: ` 'what are the other bottles?'`,
     },
     'OTHER_BOTTOLES': {
         text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
+        prompt: ` 'What does the picture look like?'`,
     },
     'OH_SHIT': {
         text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
     },
     'WAIT': {
         text: `Wait, I think you’re right! The redness is reducing all the bumps. It's working`,
+    },
+    'FIRST_PICTURE': {
+        text: `The directions- Okay, wow there's directions but no proper label. Nice. `,
+    },
+    'DIRECTION_PICTURE': {
+        text: `It says to use a syringe to inject the liquid into her bloodstream around the affected area starting with 3mL. Increase dosage if needed. Should I try this one?`,
+        prompt: ` 'Go ahead'`,
+    },
+    'FIRST_BADPLANT': {
+        text: `No directions- Wait, nevermind. There are some tiny text at the bottom. `,
+    },
+    'DIRECTION_BADPLANT': {
+        text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an acutal question mark in the directions.`,
+    },
+    'BOTTLES_QUESTION': {
+        text: `Should I use this one? Or do you want to see the other bottles?`,
     },
     // 'OH_PLEASE': {
     //     text: `Oh, please. I did all the work. You're just on the other side of the radio`,

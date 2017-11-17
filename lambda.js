@@ -289,6 +289,7 @@ var belowScript = {
     /* PART 3 */
     'GROWTH_SKIN': {
         text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
+        reprompt: ` What should I do? There could be some medical supplys laying around.`,
         prompt: ` 'Do you have a medical kit?'`,
         // options: [
         //     {
@@ -316,16 +317,33 @@ var belowScript = {
         prompt: ` Try the antiseptic.`,
     },
     'USE_ANTISEPTIC': {
-        text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shit, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
+        text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shoot, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
     },
-    'OTHER_BOTTOLES': {
+    'OTHER_BOTTLES': {
         text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
+        prompt: ` 'What does the picture look like?'`
     },
     'OH_SHIT': {
-        text: `Oh, shit. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
+        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
     },
     'WAIT': {
         text: `Wait, I think you’re right! The redness is reducing all the bumps. It's working`,
+    },
+    'FIRST_PICTURE': {
+        text: `The directions- Okay, wow there's directions but no proper label. Nice. `,
+    },
+    'DIRECTION_PICTURE': {
+        text: `It says to use a syringe to inject the liquid into her bloodstream around the affected area starting with 3mL. Increase dosage if needed. Should I try this one?`,
+        prompt: ` 'Go ahead'`,
+    },
+    'FIRST_BADPLANT': {
+        text: `No directions- Wait, nevermind. There are some tiny text at the bottom. `,
+    },
+    'DIRECTION_BADPLANT': {
+        text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an acutal question mark in the directions.`,
+    },
+    'BOTTLES_QUESTION': {
+        text: `Should I use this one? Or do you want to see the other bottles?`,
     },
     // 'OH_PLEASE': {
     //     text: `Oh, please. I did all the work. You're just on the other side of the radio`,
@@ -343,7 +361,6 @@ var belowScript = {
         text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
     }
 };
-
 
 
 
@@ -459,6 +476,26 @@ const items = [
         "dark"
       ]
     }
+  },
+  {
+    "id": "picture",
+    "name": {
+      "value": "picture",
+      "synonyms": [
+        "plant image",
+        "red x",
+        "plant picture"
+      ]
+    }
+  },
+  {
+    "id": "bottles",
+    "name": {
+      "value": "bottles",
+      "synonyms": [
+        "other bottles"
+      ]
+    }
   }
 ];
 
@@ -514,7 +551,7 @@ var handlers = {
             return;
         }
 
-        console.log('GenerateDialog: ' + this.attributes.game.state + ' + ' + this.attributes.game.currentScript);
+        console.log('GenerateDialog: (' + this.attributes.game.state + ')' + this.attributes.game.currentScript);
         if (this.attributes.game.state != game_state.GAME) {
             speechOutput += belowScript[this.attributes.game.state].text;
             this.attributes.game.state = game_state.GAME;
@@ -522,10 +559,19 @@ var handlers = {
 
         // speechOutput += belowScript[lastScript].text;
         for (var i = 0; i < num_scripts; i++) {
-            // console.log('i=' + i + ' : ' + this.attributes.game.currentScript[i]);
+            // console.log('GenerateDialog - i=' + i + ' : ' + this.attributes.game.currentScript[i]);
             speechOutput = speechOutput + belowScript[this.attributes.game.currentScript[i]].text;
         }
-        this.response.speak(speechOutput).listen();
+
+        var reprompt = '';
+        if (belowScript[lastScript].reprompt) {
+            reprompt = belowScript[lastScript].reprompt;
+        } else {
+            reprompt = belowScript[game_state.IGNORE].text + belowScript[lastScript].text;
+        }
+
+        console.log('GenerateDialog - Final output: ' + speechOutput);
+        this.response.speak(speechOutput).listen(reprompt);
         this.emit(':responseReady');
     },
 
@@ -702,27 +748,22 @@ var part1 = function(game) {
             case 'AskWhere':
                 if (slot_result == 'Lee') {
                     game.currentScript = ['HER_SITUATION'];
-                    // game.currentScript.push('HER_SITUATION');
                 }
                 break;
             case 'AskSituation':
                 console.log('PART 1 - KIND_OF_ILLEGAL: slot_result = ' + slot_result);
                 if (slot_result == 'Lee') {
                     game.currentScript = ['HER_SITUATION'];
-                    // game.currentScript.push('HER_SITUATION');
                 } else {
                     game.currentScript = ['THE_ILLEGALITY'];
-                    // game.currentScript.push('THE_ILLEGALITY');
                 }
                 break;
             case 'Special_Illegal':
                 game.currentScript = ['THE_ILLEGALITY'];
-                // game.currentScript.push('THE_ILLEGALITY');
                 break;
             case 'Special_Help':
                 // Enter part 2
                 game.currentScript = ['HER_SITUATION'];
-                // game.currentScript.push('HER_SITUATION');
                 break;
             default:
                 game.state = game_state.UNHANDLED;
@@ -735,13 +776,11 @@ var part1 = function(game) {
             case 'AskWho':
                 game.progress.who = true;
                 game.currentScript = ['SELF_INTRODUCTION'];
-                // game.currentScript.push('SELF_INTRODUCTION');
                 break;
             case 'AskSituation':
                 console.log('PART 1 - Asking about situation');
                 game.progress.situation = true;
                 game.currentScript = ['UNCONSCIOUS'];
-                // game.currentScript.push('UNCONSCIOUS');
                 break;
             case 'AskWhat':
                 console.log('PART 1 - Asking about : ' + slot);
@@ -749,11 +788,9 @@ var part1 = function(game) {
                 if (slot_result == 'airLock') {
                     game.progress.submarine = true;
                     game.currentScript = ['EXPLAIN_SUBMARINE'];
-                    // game.currentScript.push('EXPLAIN_SUBMARINE');
                 } else if (slot_result == 'sample') {
                     game.progress.samples = true;
                     game.currentScript = ['EXPLAIN_SAMPLE'];
-                    // game.currentScript.push('EXPLAIN_SAMPLE');
                 } else {
                     game.state = game_state.UNHANDLED;
                 }
@@ -762,7 +799,6 @@ var part1 = function(game) {
                 if (!game.progress.askedWhere) { // 1st time asking where
                     game.progress.submarine = true;
                     game.currentScript = ['EXPLAIN_SUBMARINE'];
-                    // game.currentScript.push('EXPLAIN_SUBMARINE');
                     game.progress.askedWhere = true;
                 } else {                         // 2nd time asking where
                     if (!game.progress.who) {
@@ -770,7 +806,6 @@ var part1 = function(game) {
                         game.progress.who = true;
                     } else {
                         game.currentScript = ['EXPLORATION'];
-                        // game.currentScript.push('EXPLORATION');
                     }
                     game.progress.exploration = true;
                 }
@@ -778,7 +813,6 @@ var part1 = function(game) {
             case 'Special_Help':
                 // Enter part 2
                 game.currentScript = ['HER_SITUATION'];
-                // game.currentScript.push('HER_SITUATION');
                 break;
             default:
                 game.state = game_state.UNHANDLED;
@@ -801,7 +835,6 @@ var part2 = function(game) {
     if (currIntent == 'Special_Breath' || (currIntent == 'AskSituation' && findSlotID(game.slot, characters) == 'Lee')) {
         if (!game.progress['askedBreath']) {
             game.currentScript = ['BREATH'];
-            // game.currentScript.push('BREATH');
             game.progress.askedBreath = true;
             return game;
         } else {
@@ -830,20 +863,16 @@ var part2 = function(game) {
         case 'IT_SMELLS':
             if (currIntent == 'AskWhat' && slot_result != 'smell' && slot_result != 'look') {
                 game.currentScript = ['GUESS_PLANT'];
-                // game.currentScript.push('GUESS_PLANT');
                 game.progress.guessPlant = true;
                 return game;
             }
         case 'INCISION':
             if (currIntent == 'AskWhat' && slot_result == 'smell') {
                 game.currentScript = ['IT_SMELLS'];
-                // game.currentScript.push('IT_SMELLS');
             } else if ((currIntent == 'AskWhat' && slot_result == 'look') || currIntent == 'AskSituation') {
                 game.currentScript = ['IT_LOOKS'];
-                // game.currentScript.push('IT_LOOKS');
             } else if (currIntent == 'Command_Remove') {
                 game.currentScript = ['PEEL_OFF'];
-                // game.currentScript.push('PEEL_OFF');
             } else {
                 game.state = game_state.UNHANDLED;
             }
@@ -871,38 +900,35 @@ var part3 = function(game) {
 
     if (game.currentIntent == 'AskWhat' && slot_item == 'plant') {
         game.currentScript = [(game.progress.guessPlant === true) ? 'REPEAT_GUESS' : 'GUESS_PLANT'];
-        // game.currentScript.push((game.progress.guessPlant === true) ? 'REPEAT_GUESS' : 'GUESS_PLANT');
     }
 
     switch (lastScript) {
         case 'GROWTH_SKIN':
             if (game.currentIntent == 'Command_Item') {
                 game.currentScript = [(slot_item == 'firstAid') ? 'GRAB_MEDICAL' : 'BUT_MEDICAL', 'ANTISEPTIC_WIPES'];
-                // game.currentScript.push((slot_item == 'firstAid') ? 'GRAB_MEDICAL' : 'BUT_MEDICAL');
-                // game.currentScript.push('ANTISEPTIC_WIPES');
                 return game;
             } else if (game.currentIntent == 'Command_Help') {
                 game.currentScript = ['MEDICAL_KIT', 'ANTISEPTIC_WIPES'];
-                // game.currentScript.push('MEDICAL_KIT');
-                // game.currentScript.push('ANTISEPTIC_WIPES');
                 return game;
             }
             break;
         case 'ANTISEPTIC_WIPES':
             if (game.currentIntent == 'Command_Item') {
-                game.currentScript = [(slot_item == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES'];
-                // game.currentScript.push((slot_item == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES');
+                game.currentScript = [(slot_item == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTLES'];
                 return game;
             }
             break;
-        case 'OTHER_BOTTOLES':
+        case 'USE_ANTISEPTIC':
+            if (game.currentIntent == 'Command_Item' && slot_item == 'bottles') {
+                game.currentScript = ['OTHER_BOTTLES'];
+                return game;
+            }
+        case 'OTHER_BOTTLES':
             if (game.currentIntent == 'Command_Item') {
-                game.currentScript = [(slot_item == 'selca') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES'];
-                // game.currentScript.push((slot_item == 'selca') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES');
+                game.currentScript = [(slot_item == 'selca') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTLES'];
                 return game;
             }
             break;
-        // case 'USE_ANTISEPTIC':
 
         default:
             break;
@@ -929,7 +955,6 @@ var nextDialog = function(game) {
         game.state = game_state.UNHANDLED; //Did not trigger the next dialog
     } else {
         game.currentScript = [nextIndex];
-        // game.currentScript.push(nextIndex);
         console.log('nextDialog - next script : ' + nextIndex);
     }
 
