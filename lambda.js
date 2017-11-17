@@ -332,7 +332,7 @@ var belowScript = {
     // }
 };
 
-
+// Using the same code as in languageModel
 const characters = [
   {
     "id": "Lee",
@@ -361,7 +361,6 @@ const characters = [
     }
   }
 ];
-
 const items = [
   {
     "id": "sample",
@@ -397,7 +396,24 @@ const items = [
     }
   }
 ];
-
+const senses = [
+  {
+    "id": "smell",
+    "name": {
+      "value": "smell",
+      "synonyms": []
+    }
+  },
+  {
+    "id": "look",
+    "name": {
+      "value": "look",
+      "synonyms": [
+        "see"
+      ]
+    }
+  }
+];
 
 var handlers = {
    'LaunchRequest': function() {
@@ -523,7 +539,7 @@ var handlers = {
 
     'AskSituation': function () {
         this.attributes.game.currentIntent = 'AskSituation';
-        this.attributes.game.slot = this.event.request.intent.slots.she.value;
+        this.attributes.game.slot = this.event.request.intent.slots.person.value;
         this.emit('handleIntent');
         console.log('Asking about: ' + this.attributes.game.slot);
     },
@@ -623,16 +639,16 @@ var prologue = function(game) {
 var part1 = function(game) {
     let slot = game.slot;
     if (game.currentScript == 'KIND_OF_ILLEGAL') { // Last dialog: exploration
-        // let slot_result = checkCharacterSlot(slot);
+        let slot_result = findSlotID(slot, characters);
         switch(game.currentIntent) {
             case 'AskWhere':
-                if (slot == 'she') {
+                if (slot_result == 'Lee') {
                     game.currentScript = 'HER_SITUATION';
                 }
                 break;
             case 'AskSituation':
-                console.log('PART 1 - KIND_OF_ILLEGAL: slot = ' + slot);
-                if (slot == 'she') {
+                console.log('PART 1 - KIND_OF_ILLEGAL: slot_result = ' + slot_result);
+                if (slot_result == 'Lee') {
                     game.currentScript = 'HER_SITUATION';
                 } else {
                     game.currentScript = 'THE_ILLEGALITY';
@@ -664,7 +680,7 @@ var part1 = function(game) {
                 break;
             case 'AskWhat':
                 console.log('PART 1 - Asking about : ' + slot);
-                let slot_result = checkItemSlot(slot);
+                let slot_result = findSlotID(slot, items);
                 if (slot_result == 'airLock') {
                     game.progress.submarine = true;
                     game.currentScript = 'EXPLAIN_SUBMARINE';
@@ -736,16 +752,17 @@ var part2 = function(game) {
         }
     }
 
+    let slot_result = findSlotID(game.slot, senses);
     switch (game.currentScript) {
         case 'IT_LOOKS':
         case 'IT_SMELLS':
-            if (currIntent == 'AskWhat' && game.slot != 'smell' && game.slot != 'look' && game.slot != 'see') {
+            if (currIntent == 'AskWhat' && slot_result != 'smell' && slot_result != 'look') {
                 game.currentScript = 'GUESS_PLANT';
             }
         case 'INCISION':
-            if (currIntent == 'AskWhat' && game.slot == 'smell') {
+            if (currIntent == 'AskWhat' && slot_result == 'smell') {
                 game.currentScript = 'IT_SMELLS';
-            } else if ((currIntent == 'AskWhat' && (game.slot == 'look' || game.slot == 'see')) || currIntent == 'AskSituation') {
+            } else if ((currIntent == 'AskWhat' && slot_result == 'look') || currIntent == 'AskSituation') {
                 game.currentScript = 'IT_LOOKS';
             } else if (currIntent == 'Command_Remove') {
                 game.currentScript = 'PEEL_OFF';
@@ -771,9 +788,8 @@ var part2 = function(game) {
 }
 
 var part3 = function(game) {
-
     if (game.currentIntent == 'Command_Item') {
-        console.log('Part 3 - slot: ' + checkItemSlot(game.slot));
+        let slot_result = findSlotID(game.slot, items);
     }
 
     return game;
@@ -807,22 +823,17 @@ var setUnhandled = function(game_obj) {
     return game_obj;
 }
 
-var checkCharacterSlot = function(input_slot) {
-    let slotID = findSlotID(input_slot, characters);
-    console.log('PARSING SLOT - result: ' + slotID);
-    return slotID;
-}
+// var checkCharacterSlot = function(input_slot) {
+//     let slotID = findSlotID(input_slot, characters);
+//     console.log('PARSING SLOT - result: ' + slotID);
+//     return slotID;
+// }
 
-var checkItemSlot = function(input_slot) {
-    let slotID = findSlotID(input_slot, items);
-    console.log('PARSING SLOT - result: ' + slotID);
-    return slotID;
-    // if (input_slot == 'air lock' || input_slot == 'submarine' || input_slot == 'lock' || input_slot == 'sub')
-    //     return 'airLock';
-    // else if (input_slot == 'sample' || input_slot == 'samples' || input_slot == 'research')
-    //     return 'sample';
-    // return;
-}
+// var checkItemSlot = function(input_slot) {
+//     let slotID = findSlotID(input_slot, items);
+//     console.log('PARSING SLOT - result: ' + slotID);
+//     return slotID;
+// }
 
 var findSlotID = function(input_slot, slots) {
     console.log('PARSING SLOT - input: ' + input_slot);
