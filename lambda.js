@@ -74,7 +74,7 @@ var belowScript = {
 
     /* PART 1 */
     'THANK_GOD': {
-        text: `Oh my god. Yes! Thank god. I was about to give up. It was terrible...`, //Or "This terrible situation..."
+        text: `Thank god. Yes! I was about to give up. It was terrible...`, // "Oh my god. Yes! Thank god. I was about to give up. It was terrible..."
         prompt: ` 'what is happening', or 'who are you'`
     },
     'SELF_INTRODUCTION': {
@@ -94,7 +94,7 @@ var belowScript = {
         prompt: ` 'what is sub'`,
     },
     'NEED_INTRODUCTION': { // When Jesse forgot to introduce himself at first
-        text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice. We are exploring The Mariana Trench actually... Our project is pretty huge and also, kind of, well...`,
+        text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice. `,
         options: [
             {
                 next: 'KIND_OF_ILLEGAL',
@@ -302,17 +302,18 @@ var belowScript = {
         // ],
     },
     'GRAB_MEDICAL': {
-        text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+        text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. `,
     },
     'BUT_MEDICAL': {
-        text: `Hmmmmm, I'm not sure if I have that. But I just realized we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+        text: `Hmmmmm, I'm not sure if I have that. But I just realized we have the standard first aid stuff. Let me grab it ... Okay, `,
     },
     'MEDICAL_KIT': {
-        text: `Right, I almost forgot we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+        text: `Right, I almost forgot we have the standard first aid stuff. Let me grab it ... Okay, `,
     },
     'ANTISEPTIC_WIPES': {
         text: `I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
         reprompt: ` What should I use? The antiseptic wipes, or the other bottles?`,
+        prompt: ` Try the antiseptic.`,
     },
     'USE_ANTISEPTIC': {
         text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shit, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
@@ -342,8 +343,6 @@ var belowScript = {
         text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
     }
 };
-
-
 
 
 
@@ -472,7 +471,7 @@ var handlers = {
                 'progressIndex': game_progress.PROLOGUE,
                 'progress': {},
                 'slot': '',
-                'currentScript' : 'FIRST',
+                'currentScript' : ['FIRST'],
                 'currentIntent' : ''
             };
             if (isDebug) {
@@ -481,7 +480,7 @@ var handlers = {
                     'progressIndex': game_progress.PART_3,
                     'progress': {},
                     'slot': '',
-                    'currentScript' : 'GROWTH_SKIN',
+                    'currentScript' : ['GROWTH_SKIN'],
                     'currentIntent' : ''
                 }
             }
@@ -502,25 +501,30 @@ var handlers = {
     // Get the next script and generate the response
     'GenerateDialog': function() {
         var speechOutput = '';
-        var currScript = this.attributes.game.currentScript;
+        let num_scripts = this.attributes.game.currentScript.length;
+        let lastScript = this.attributes.game.currentScript[num_scripts - 1];
 
         if (this.attributes.game.state == game_state.HELP) {
             let index = Math.floor(Math.random() * belowScript.HELP.text.length);
             speechOutput += belowScript.HELP.text[index];
-            speechOutput += belowScript[currScript].prompt;
+            speechOutput += belowScript[lastScript].prompt;
             this.attributes.game.state = game_state.GAME;
             this.response.speak(speechOutput).listen();
             this.emit(':responseReady');
             return;
         }
 
+        console.log('GenerateDialog: ' + this.attributes.game.state + ' + ' + this.attributes.game.currentScript);
         if (this.attributes.game.state != game_state.GAME) {
-            console.log('GenerateDialog: ' + this.attributes.game.state + ' + ' + currScript);
             speechOutput += belowScript[this.attributes.game.state].text;
             this.attributes.game.state = game_state.GAME;
         }
 
-        speechOutput += belowScript[currScript].text;
+        // speechOutput += belowScript[lastScript].text;
+        for (var i = 0; i < num_scripts; i++) {
+            // console.log('i=' + i + ' : ' + this.attributes.game.currentScript[i]);
+            speechOutput = speechOutput + belowScript[this.attributes.game.currentScript[i]].text;
+        }
         this.response.speak(speechOutput).listen();
         this.emit(':responseReady');
     },
@@ -530,7 +534,7 @@ var handlers = {
             'state': game_state.GAME,
             'progressIndex': game_progress.PROLOGUE,
             'progress': {},
-            'currentScript' : 'FIRST',
+            'currentScript' : ['FIRST'],
             'currentIntent' : ''
         };
         this.emit('GenerateDialog');
@@ -563,9 +567,9 @@ var handlers = {
 
     // Unhandled only works when the dialog can be forwarded with 'anything'
     'Unhandled': function() {
+        console.log('Unhandled');
         this.attributes.game.currentIntent = 'UnhandledIntent';
         this.emit('handleIntent');
-        console.log('Unhandled');
     },
 
     // // Save state
@@ -690,56 +694,66 @@ var prologue = function(game) {
 }
 
 var part1 = function(game) {
+    let lastScript = game.currentScript[game.currentScript.length - 1];
     let slot = game.slot;
-    if (game.currentScript == 'KIND_OF_ILLEGAL') { // Last dialog: exploration
+    if (lastScript == 'KIND_OF_ILLEGAL') { // Last dialog: exploration
         let slot_result = findSlotID(slot, characters);
         switch(game.currentIntent) {
             case 'AskWhere':
                 if (slot_result == 'Lee') {
-                    game.currentScript = 'HER_SITUATION';
+                    game.currentScript = ['HER_SITUATION'];
+                    // game.currentScript.push('HER_SITUATION');
                 }
                 break;
             case 'AskSituation':
                 console.log('PART 1 - KIND_OF_ILLEGAL: slot_result = ' + slot_result);
                 if (slot_result == 'Lee') {
-                    game.currentScript = 'HER_SITUATION';
+                    game.currentScript = ['HER_SITUATION'];
+                    // game.currentScript.push('HER_SITUATION');
                 } else {
-                    game.currentScript = 'THE_ILLEGALITY';
+                    game.currentScript = ['THE_ILLEGALITY'];
+                    // game.currentScript.push('THE_ILLEGALITY');
                 }
                 break;
             case 'Special_Illegal':
-                game.currentScript = 'THE_ILLEGALITY';
+                game.currentScript = ['THE_ILLEGALITY'];
+                // game.currentScript.push('THE_ILLEGALITY');
                 break;
             case 'Special_Help':
                 // Enter part 2
-                game.progressIndex = game_progress.PART_2;
+                game.currentScript = ['HER_SITUATION'];
+                // game.currentScript.push('HER_SITUATION');
                 break;
             default:
                 game.state = game_state.UNHANDLED;
                 break;
         }
-    } else if (belowScript[game.currentScript].options) { // Has options
+    } else if (belowScript[lastScript].options) { // Has options
         game = nextDialog(game);
     } else { // No options, proceed dialogs by asking questions
         switch (game.currentIntent) {
             case 'AskWho':
                 game.progress.who = true;
-                game.currentScript = 'SELF_INTRODUCTION';
+                game.currentScript = ['SELF_INTRODUCTION'];
+                // game.currentScript.push('SELF_INTRODUCTION');
                 break;
             case 'AskSituation':
                 console.log('PART 1 - Asking about situation');
                 game.progress.situation = true;
-                game.currentScript = 'UNCONSCIOUS';
+                game.currentScript = ['UNCONSCIOUS'];
+                // game.currentScript.push('UNCONSCIOUS');
                 break;
             case 'AskWhat':
                 console.log('PART 1 - Asking about : ' + slot);
                 let slot_result = findSlotID(slot, items);
                 if (slot_result == 'airLock') {
                     game.progress.submarine = true;
-                    game.currentScript = 'EXPLAIN_SUBMARINE';
+                    game.currentScript = ['EXPLAIN_SUBMARINE'];
+                    // game.currentScript.push('EXPLAIN_SUBMARINE');
                 } else if (slot_result == 'sample') {
                     game.progress.samples = true;
-                    game.currentScript = 'EXPLAIN_SAMPLE';
+                    game.currentScript = ['EXPLAIN_SAMPLE'];
+                    // game.currentScript.push('EXPLAIN_SAMPLE');
                 } else {
                     game.state = game_state.UNHANDLED;
                 }
@@ -747,21 +761,24 @@ var part1 = function(game) {
             case 'AskWhere':
                 if (!game.progress.askedWhere) { // 1st time asking where
                     game.progress.submarine = true;
-                    game.currentScript = 'EXPLAIN_SUBMARINE';
+                    game.currentScript = ['EXPLAIN_SUBMARINE'];
+                    // game.currentScript.push('EXPLAIN_SUBMARINE');
                     game.progress.askedWhere = true;
                 } else {                         // 2nd time asking where
                     if (!game.progress.who) {
-                        game.currentScript = 'INTRODUCTION_EXPLORATION';
+                        game.currentScript = ['NEED_INTRODUCTION', 'EXPLORATION']
                         game.progress.who = true;
                     } else {
-                        game.currentScript = 'EXPLORATION';
+                        game.currentScript = ['EXPLORATION'];
+                        // game.currentScript.push('EXPLORATION');
                     }
                     game.progress.exploration = true;
                 }
                 break;
             case 'Special_Help':
                 // Enter part 2
-                game.currentScript = 'HER_SITUATION';
+                game.currentScript = ['HER_SITUATION'];
+                // game.currentScript.push('HER_SITUATION');
                 break;
             default:
                 game.state = game_state.UNHANDLED;
@@ -770,7 +787,7 @@ var part1 = function(game) {
     }
 
     // Enter part 2
-    if (game.currentScript == 'HER_SITUATION' || game.currentScript == 'CONTINUE_SITUATION') {
+    if (lastScript == 'HER_SITUATION' || lastScript == 'CONTINUE_SITUATION') {
         game.progressIndex = game_progress.PART_2;
         game.progress['redness'] = 0;
         game.progress['askedBreath'] = false;
@@ -779,26 +796,28 @@ var part1 = function(game) {
 }
 
 var part2 = function(game) {
+    let lastScript = game.currentScript[game.currentScript.length - 1];
     let currIntent = game.currentIntent;
     if (currIntent == 'Special_Breath' || (currIntent == 'AskSituation' && findSlotID(game.slot, characters) == 'Lee')) {
         if (!game.progress['askedBreath']) {
-            game.currentScript = 'BREATH';
+            game.currentScript = ['BREATH'];
+            // game.currentScript.push('BREATH');
             game.progress.askedBreath = true;
             return game;
         } else {
             if (currIntent != 'AskSituation') {
             // switch (game.progress['redness']) {
             //     case 0:
-            //         game.currentScript = 'FACE_NORMAL';
+            //         game.currentScript.push('FACE_NORMAL');
             //         return game;
             //     case 1:
-            //         game.currentScript = 'FACE_RED';
+            //         game.currentScript.push('FACE_RED');
             //         return game;
             //     case 2:
-            //         game.currentScript = 'FACE_PURPLE';
+            //         game.currentScript.push('FACE_PURPLE');
             //         return game;
             //     default:
-            //         game.currentScript = 'OH_NO';
+            //         game.currentScript.push('OH_NO');
             // }
             // return game;
             }
@@ -806,21 +825,25 @@ var part2 = function(game) {
     }
 
     let slot_result = findSlotID(game.slot, senses);
-    switch (game.currentScript) {
+    switch (lastScript) {
         case 'IT_LOOKS':
         case 'IT_SMELLS':
             if (currIntent == 'AskWhat' && slot_result != 'smell' && slot_result != 'look') {
-                game.currentScript = 'GUESS_PLANT';
+                game.currentScript = ['GUESS_PLANT'];
+                // game.currentScript.push('GUESS_PLANT');
                 game.progress.guessPlant = true;
                 return game;
             }
         case 'INCISION':
             if (currIntent == 'AskWhat' && slot_result == 'smell') {
-                game.currentScript = 'IT_SMELLS';
+                game.currentScript = ['IT_SMELLS'];
+                // game.currentScript.push('IT_SMELLS');
             } else if ((currIntent == 'AskWhat' && slot_result == 'look') || currIntent == 'AskSituation') {
-                game.currentScript = 'IT_LOOKS';
+                game.currentScript = ['IT_LOOKS'];
+                // game.currentScript.push('IT_LOOKS');
             } else if (currIntent == 'Command_Remove') {
-                game.currentScript = 'PEEL_OFF';
+                game.currentScript = ['PEEL_OFF'];
+                // game.currentScript.push('PEEL_OFF');
             } else {
                 game.state = game_state.UNHANDLED;
             }
@@ -833,9 +856,9 @@ var part2 = function(game) {
 
     game = nextDialog(game);
 
-    if (game.currentScript.slice(0, 4) == 'END') {
+    if (lastScript.slice(0, 4) == 'END') {
         game.progressIndex = game_progress.END;
-    } else if (game.currentScript == 'GROWTH_SKIN') {
+    } else if (lastScript == 'GROWTH_SKIN') {
         game.progressIndex = game_progress.PART_3;
     }
 
@@ -843,40 +866,59 @@ var part2 = function(game) {
 }
 
 var part3 = function(game) {
-    if (game.currentIntent == 'AskWhat' && findSlotID(game.slot, items) == 'plant') {
-        game.currentScript = (game.progress.guessPlant == true) ? 'REPEAT_GUESS' : 'GUESS_PLANT';
+    let lastScript = game.currentScript[game.currentScript.length - 1];
+    let slot_item = findSlotID(game.slot, items);
+
+    if (game.currentIntent == 'AskWhat' && slot_item == 'plant') {
+        game.currentScript = [(game.progress.guessPlant === true) ? 'REPEAT_GUESS' : 'GUESS_PLANT'];
+        // game.currentScript.push((game.progress.guessPlant === true) ? 'REPEAT_GUESS' : 'GUESS_PLANT');
     }
 
-    switch (game.currentScript) {
+    switch (lastScript) {
         case 'GROWTH_SKIN':
             if (game.currentIntent == 'Command_Item') {
-                game.currentScript = (findSlotID(game.slot, items) == 'firstAid') ? 'GRAB_MEDICAL' : 'BUT_MEDICAL';
+                game.currentScript = [(slot_item == 'firstAid') ? 'GRAB_MEDICAL' : 'BUT_MEDICAL', 'ANTISEPTIC_WIPES'];
+                // game.currentScript.push((slot_item == 'firstAid') ? 'GRAB_MEDICAL' : 'BUT_MEDICAL');
+                // game.currentScript.push('ANTISEPTIC_WIPES');
+                return game;
             } else if (game.currentIntent == 'Command_Help') {
-                game.currentScript = 'MEDICAL_KIT';
+                game.currentScript = ['MEDICAL_KIT', 'ANTISEPTIC_WIPES'];
+                // game.currentScript.push('MEDICAL_KIT');
+                // game.currentScript.push('ANTISEPTIC_WIPES');
+                return game;
             }
             break;
         case 'ANTISEPTIC_WIPES':
             if (game.currentIntent == 'Command_Item') {
-                game.currentScript = (findSlotID(game.slot, items) == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES';
+                game.currentScript = [(slot_item == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES'];
+                // game.currentScript.push((slot_item == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES');
+                return game;
             }
             break;
         case 'OTHER_BOTTOLES':
             if (game.currentIntent == 'Command_Item') {
-                game.currentScript = (findSlotID(game.slot, items) == 'selca') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES';
+                game.currentScript = [(slot_item == 'selca') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES'];
+                // game.currentScript.push((slot_item == 'selca') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTOLES');
+                return game;
             }
+            break;
+        // case 'USE_ANTISEPTIC':
+
         default:
             break;
     }
 
+    game.state = game_state.UNHANDLED;
     return game;
 }
 
 // Find the next dialog that will trigger by the current intent
 var nextDialog = function(game) {
+    let lastScript = game.currentScript[game.currentScript.length - 1];
     let intentName = game.currentIntent;
     console.log('Checking tigger for: ' + intentName);
     var nextIndex;
-    belowScript[game.currentScript].options.forEach( function(option) {
+    belowScript[lastScript].options.forEach( function(option) {
         option.triggers.forEach( function(trigger) {
             if (trigger === 'anything' || intentName == trigger) {
                 nextIndex = option.next;
@@ -886,7 +928,8 @@ var nextDialog = function(game) {
     if (nextIndex === undefined) { //
         game.state = game_state.UNHANDLED; //Did not trigger the next dialog
     } else {
-        game.currentScript = nextIndex;
+        game.currentScript = [nextIndex];
+        // game.currentScript.push(nextIndex);
         console.log('nextDialog - next script : ' + nextIndex);
     }
 

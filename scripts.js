@@ -49,7 +49,7 @@ var belowScript = {
 
     /* PART 1 */
     'THANK_GOD': {
-        text: `Oh my god. Yes! Thank god. I was about to give up. It was terrible...`, //Or "This terrible situation..."
+        text: `Thank god. Yes! I was about to give up. It was terrible...`, // "Oh my god. Yes! Thank god. I was about to give up. It was terrible..."
         prompt: ` 'what is happening', or 'who are you'`
     },
     'SELF_INTRODUCTION': {
@@ -69,7 +69,7 @@ var belowScript = {
         prompt: ` 'what is sub'`,
     },
     'NEED_INTRODUCTION': { // When Jesse forgot to introduce himself at first
-        text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice. We are exploring The Mariana Trench actually... Our project is pretty huge and also, kind of, well...`,
+        text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice. `,
         options: [
             {
                 next: 'KIND_OF_ILLEGAL',
@@ -277,26 +277,27 @@ var belowScript = {
         // ],
     },
     'GRAB_MEDICAL': {
-        text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+        text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. `,
     },
     'BUT_MEDICAL': {
-        text: `Hmmmmm, I'm not sure if I have that. But I just realized we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+        text: `Hmmmmm, I'm not sure if I have that. But I just realized we have the standard first aid stuff. Let me grab it ... Okay, `,
     },
     'MEDICAL_KIT': {
-        text: `Right, I almost forgot we have the standard first aid stuff. Let me grab it ... Okay, I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
+        text: `Right, I almost forgot we have the standard first aid stuff. Let me grab it ... Okay, `,
     },
     'ANTISEPTIC_WIPES': {
         text: `I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
         reprompt: ` What should I use? The antiseptic wipes, or the other bottles?`,
+        prompt: ` Try the antiseptic.`,
     },
     'USE_ANTISEPTIC': {
-        text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shit, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
+        text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shoot, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
     },
     'OTHER_BOTTOLES': {
         text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
     },
     'OH_SHIT': {
-        text: `Oh, shit. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
+        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
     },
     'WAIT': {
         text: `Wait, I think you’re right! The redness is reducing all the bumps. It's working`,
