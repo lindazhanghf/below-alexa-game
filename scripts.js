@@ -296,41 +296,47 @@ var belowScript = {
         reprompt: ` Maybe we should see the other bottles`,
         prompt: ` 'what are the other bottles?'`,
     },
-    'OTHER_BOTTOLES': {
-        text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
-        prompt: ` 'What does the picture look like?'`,
-    },
-    'OH_SHIT': {
-        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
-    },
-    'WAIT': {
-        text: `Wait, I think you’re right! The redness is reducing all the bumps. It's working`,
+    'OTHER_BOTTLES': { // ORIGINAL: "Wow. Doctor Lee always did- does- have a sense of humor."
+        text: `Wow. Doctor Lee always does have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
+        prompt: ` 'What is in the plant image?'`,
     },
     'FIRST_PICTURE': {
         text: `The directions- Okay, wow there's directions but no proper label. Nice. `,
     },
     'DIRECTION_PICTURE': {
-        text: `It says to use a syringe to inject the liquid into her bloodstream around the affected area starting with 3mL. Increase dosage if needed. Should I try this one?`,
+        text: `It says to use a syringe to inject the liquid into her bloodstream around the affected area starting with 3 milliliter. Increase dosage if needed. Should I try this one?`,
         prompt: ` 'Go ahead'`,
+        reprompt: `Should I use this one? Or do you want to see the other bottles?`,
     },
     'FIRST_BADPLANT': {
         text: `No directions- Wait, nevermind. There are some tiny text at the bottom. `,
     },
     'DIRECTION_BADPLANT': {
-        text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an acutal question mark in the directions.`,
+        text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an actual question mark in the directions.`,
+        reprompt: `Should I use this one? Or do you want to see the other bottles?`,
     },
-    'BOTTLES_QUESTION': {
-        text: `Should I use this one? Or do you want to see the other bottles?`,
+    'START_BADPLANT': {
+        text: `Okay, I will use one shot first. `,
     },
-    // 'OH_PLEASE': {
-    //     text: `Oh, please. I did all the work. You're just on the other side of the radio`,
-    // },
-    // 'YEAH_YEAH': {
-    //     text: `Yeah, yeah. But listen, thank you. For everything. You've actually been pretty helpf- Oh my god! The captain! She's waking up`,
-    // },
-    // 'WAIT_HER': {
-    //     text: `Wait! Her veins are going back to normal. The redness is reducing all the bumps! It's working`,
-    // },
+    'START_PICTURE': {
+        text: `Alright then, I will start with 3 milliliter. `,
+    },
+    'CONDITION_WORSE': {
+        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
+    },
+    'WAIT': {
+        text: `Wait, I think you’re right! Her veins are going back to normal. The redness is reducing all the bumps. It's working`,
+    },
+
+    'END_WAKE': { // ORIGINAL: Yeah, yeah. But listen, thank you.
+        text: `Thank you. For everything. You've actually been pretty helpful- Oh my god! The captain! She's waking up`,
+        options: [
+            {
+                next: 'END',
+                triggers: 'anything'
+            }
+        ]
+    },
     // 'DONT_SAY': {
     //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     // }

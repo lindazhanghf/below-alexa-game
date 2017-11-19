@@ -318,42 +318,49 @@ var belowScript = {
     },
     'USE_ANTISEPTIC': {
         text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shoot, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
+        reprompt: ` Maybe we should see the other bottles`,
+        prompt: ` 'what are the other bottles?'`,
     },
-    'OTHER_BOTTLES': {
-        text: `Wow. Doctor Lee always did- does- have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
-        prompt: ` 'What does the picture look like?'`
-    },
-    'OH_SHIT': {
-        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
-    },
-    'WAIT': {
-        text: `Wait, I think you’re right! The redness is reducing all the bumps. It's working`,
+    'OTHER_BOTTLES': { // ORIGINAL: "Wow. Doctor Lee always did- does- have a sense of humor."
+        text: `Wow. Doctor Lee always does have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
+        prompt: ` 'What is in the plant image?'`,
     },
     'FIRST_PICTURE': {
         text: `The directions- Okay, wow there's directions but no proper label. Nice. `,
     },
     'DIRECTION_PICTURE': {
-        text: `It says to use a syringe to inject the liquid into her bloodstream around the affected area starting with 3mL. Increase dosage if needed. Should I try this one?`,
+        text: `It says to use a syringe to inject the liquid into her bloodstream around the affected area starting with 3 milliliter. Increase dosage if needed. Should I try this one?`,
         prompt: ` 'Go ahead'`,
+        reprompt: `Should I use this one? Or do you want to see the other bottles?`,
     },
     'FIRST_BADPLANT': {
         text: `No directions- Wait, nevermind. There are some tiny text at the bottom. `,
     },
     'DIRECTION_BADPLANT': {
-        text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an acutal question mark in the directions.`,
+        text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an actual question mark in the directions.`,
+        reprompt: `Should I use this one? Or do you want to see the other bottles?`,
     },
-    'BOTTLES_QUESTION': {
-        text: `Should I use this one? Or do you want to see the other bottles?`,
+    'START_BADPLANT': {
+        text: `Okay, I will use one shot first. `,
     },
-    // 'OH_PLEASE': {
-    //     text: `Oh, please. I did all the work. You're just on the other side of the radio`,
-    // },
-    // 'YEAH_YEAH': {
-    //     text: `Yeah, yeah. But listen, thank you. For everything. You've actually been pretty helpf- Oh my god! The captain! She's waking up`,
-    // },
-    // 'WAIT_HER': {
-    //     text: `Wait! Her veins are going back to normal. The redness is reducing all the bumps! It's working`,
-    // },
+    'START_PICTURE': {
+        text: `Alright then, I will start with 3 milliliter. `,
+    },
+    'CONDITION_WORSE': {
+        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
+    },
+    'WAIT': {
+        text: `Wait, I think you’re right! Her veins are going back to normal. The redness is reducing all the bumps. It's working`,
+    },
+    'END_WAKE': { // ORIGINAL: Yeah, yeah. But listen, thank you.
+        text: `Thank you. For everything. You've actually been pretty helpful- Oh my god! The captain! She's waking up`,
+        options: [
+            {
+                next: 'END',
+                triggers: 'anything'
+            }
+        ]
+    },
     // 'DONT_SAY': {
     //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
     // }
@@ -361,6 +368,7 @@ var belowScript = {
         text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
     }
 };
+
 
 
 
@@ -484,7 +492,9 @@ const items = [
       "synonyms": [
         "plant image",
         "red x",
-        "plant picture"
+        "plant picture",
+        "plant pictures",
+        "plant images"
       ]
     }
   },
@@ -494,6 +504,16 @@ const items = [
       "value": "bottles",
       "synonyms": [
         "other bottles"
+      ]
+    }
+  },
+  {
+    "id": "badPlant",
+    "name": {
+      "value": "bad plant",
+      "synonyms": [
+        "bad plant bottle",
+        "in case of bad plant"
       ]
     }
   }
@@ -520,6 +540,8 @@ var handlers = {
                     'currentScript' : ['GROWTH_SKIN'],
                     'currentIntent' : ''
                 }
+                this.attributes.game.progress.firstPicture = true; // First time triggering this dialogue?
+                this.attributes.game.progress.firstBadPlant = true; // First time triggering this dialogue?
             }
         } else {
             this.attributes.game.state = game_state.RETURNING;
@@ -551,10 +573,9 @@ var handlers = {
             return;
         }
 
-        console.log('GenerateDialog: (' + this.attributes.game.state + ')' + this.attributes.game.currentScript);
+        console.log('GenerateDialog: (' + this.attributes.game.state + ') ' + this.attributes.game.currentScript);
         if (this.attributes.game.state != game_state.GAME) {
             speechOutput += belowScript[this.attributes.game.state].text;
-            this.attributes.game.state = game_state.GAME;
         }
 
         // speechOutput += belowScript[lastScript].text;
@@ -566,11 +587,15 @@ var handlers = {
         var reprompt = '';
         if (belowScript[lastScript].reprompt) {
             reprompt = belowScript[lastScript].reprompt;
+            if (this.attributes.game.state == game_state.UNHANDLED) {
+                speechOutput += belowScript[lastScript].reprompt;
+            }
         } else {
             reprompt = belowScript[game_state.IGNORE].text + belowScript[lastScript].text;
         }
 
         console.log('GenerateDialog - Final output: ' + speechOutput);
+        this.attributes.game.state = game_state.GAME;
         this.response.speak(speechOutput).listen(reprompt);
         this.emit(':responseReady');
     },
@@ -635,8 +660,8 @@ var handlers = {
         this.emit('handleIntent');
     },
 
-    'HelloIntent': function () {
-        this.attributes.game.currentIntent = 'HelloIntent';
+    'WaitIntent': function () {
+        this.attributes.game.currentIntent = 'WaitIntent';
         this.emit('handleIntent');
     },
 
@@ -889,6 +914,8 @@ var part2 = function(game) {
         game.progressIndex = game_progress.END;
     } else if (lastScript == 'GROWTH_SKIN') {
         game.progressIndex = game_progress.PART_3;
+        game.progress.firstPicture = true; // First time triggering this dialogue?
+        game.progress.firstBadPlant = true; // First time triggering this dialogue?
     }
 
     return game;
@@ -904,7 +931,7 @@ var part3 = function(game) {
 
     switch (lastScript) {
         case 'GROWTH_SKIN':
-            if (game.currentIntent == 'Command_Item') {
+            if (game.currentIntent == 'Command_Item' || game.currentIntent == 'AskWhat') {
                 game.currentScript = [(slot_item == 'firstAid') ? 'GRAB_MEDICAL' : 'BUT_MEDICAL', 'ANTISEPTIC_WIPES'];
                 return game;
             } else if (game.currentIntent == 'Command_Help') {
@@ -913,23 +940,49 @@ var part3 = function(game) {
             }
             break;
         case 'ANTISEPTIC_WIPES':
-            if (game.currentIntent == 'Command_Item') {
+            if (game.currentIntent == 'Command_Item' || game.currentIntent == 'AskWhat') {
                 game.currentScript = [(slot_item == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTLES'];
                 return game;
             }
             break;
         case 'USE_ANTISEPTIC':
-            if (game.currentIntent == 'Command_Item' && slot_item == 'bottles') {
+            if (slot_item == 'bottles') {
                 game.currentScript = ['OTHER_BOTTLES'];
                 return game;
             }
+            break;
+        case 'DIRECTION_BADPLANT':
+        case 'DIRECTION_PICTURE':
+            let bottle_name = lastScript.slice(10);
+            console.log('Bottle name: ' + bottle_name);
+            if (game.currentIntent == 'YesIntent' || game.currentIntent == 'NextIntent') {
+                game.currentScript = [ 'START_' + bottle_name, 'CONDITION_WORSE'];
+                return game;
+            }
         case 'OTHER_BOTTLES':
-            if (game.currentIntent == 'Command_Item') {
-                game.currentScript = [(slot_item == 'selca') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTLES'];
+            if (slot_item == 'picture') {
+                if (game.progress.firstPicture) {
+                    game.currentScript = ['FIRST_PICTURE', 'DIRECTION_PICTURE'];
+                    game.progress.firstPicture = false;
+                } else {
+                    game.currentScript = ['DIRECTION_PICTURE'];
+                }
+                return game;
+            } else if (slot_item == 'badPlant') {
+                if (game.progress.firstBadPlant) {
+                    game.currentScript = ['FIRST_BADPLANT', 'DIRECTION_BADPLANT'];
+                    game.progress.firstBadPlant = false;
+                } else {
+                    game.currentScript = ['DIRECTION_BADPLANT'];
+                }
                 return game;
             }
             break;
-
+        case 'CONDITION_WORSE':
+            if (game.currentIntent == 'WaitIntent') {
+                game.currentScript = ['WAIT'];
+            }
+            break;
         default:
             break;
     }
@@ -973,10 +1026,12 @@ var findSlotID = function(input_slot, slots) {
         for (var i = 0; i < slots.length; i++) {
             console.log('PARSING SLOT - check name: ' + slots[i].name.value);
             if (input_slot.toUpperCase() === slots[i].name.value.toUpperCase()) {
+                console.log('PARSING SLOT - result: ' + slots[i].id);
                 return slots[i].id;
             }
             for (var j = 0; j < slots[i].name.synonyms.length; j++) {
                 if (input_slot.toUpperCase() === slots[i].name.synonyms[j].toUpperCase()) {
+                    console.log('PARSING SLOT - result: ' + slots[i].id);
                     return slots[i].id;
                 }
             }
