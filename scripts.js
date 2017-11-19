@@ -1,9 +1,9 @@
 var belowScript = {
     'START': {
-        text: `Welcome to below game, an interactive narrative game you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
+        text: `Welcome to Below, an interactive narrative you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
     },
     'RETURNING': {
-        text: `Welcome back to below game, you can restart the game by saying start over. `
+        text: `Welcome back to Below, you can restart the game by saying start over. `
     },
     'UNHANDLED': {
         text: `I am not sure what you mean. Let me repeat myself here. `
@@ -15,12 +15,12 @@ var belowScript = {
         text: `Sorry I wasn't very clear. `
     },
     'END': {
-        text: `You have finished the first chapter of the Below game. The second chapter is still under development. You can start over and uncover more stories below the surface.`
+        text: `You have finished the first chapter of Below. The second chapter is still under development. You can start over and uncover more stories below the surface.`
     },
     'HELP': {
         text: [
             `You can ask questions like ... `,
-            `Try say something like ... `,
+            `Try saying something like ... `,
             `Maybe try ... `
         ]
     },
@@ -65,11 +65,11 @@ var belowScript = {
         prompt: ` 'where are you exploring'`,
     },
     'EXPLAIN_SAMPLE': {
-        text: `For the past two weeks, we've been doing research and trying to find growth of the medicinal plant, Selca Lexorium. We think- or, I guess, we THOUGHT we finally found some, so Captain Lee left the sub to collect some samples, but something went wrong.`,
+        text: `For the past two weeks, we've been doing research and trying to find a sample of the medicinal plant, Selca Lexorium. We think- or, I guess, we THOUGHT we finally found some, so Captain Lee left the sub to collect some samples. Then something went wrong.`,
         prompt: ` 'what is sub'`,
     },
     'NEED_INTRODUCTION': { // When Jesse forgot to introduce himself at first
-        text: `Ah right. Ok, I need to explain myself a little better. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice. `,
+        text: `Ah right. Ok, I need to explain myself. Sorry. This is Jesse Harper. I'm a bioengineer and currently Doctor Sloane Lee's apprentice. `,
         options: [
             {
                 next: 'KIND_OF_ILLEGAL',
@@ -145,7 +145,7 @@ var belowScript = {
         prompt: ` 'stole from who' or 'what did you do'`,
     },
     'EXPLAIN_RESEARCH': {
-        text: `I know! I know. But listen, someone's dig around in this place. What are they keeping from us down here? The rest of the Mariana's been relatively easy to get a permit for for decades. Especially for scientists with meaningful research like Doctor Lee! Once the Captain and I started our studies and realized that the Selcal Lexorium potentially originated from this area... Well, she's not really the type to let the law get in the way of scientific progress. Our research is for the greater good! We could help thousands.`,
+        text: `I know! I know. But listen, someone's dig around in this place. What are they keeping from us down here? The rest of the Mariana's been relatively open for decades. Especially for scientists with meaningful research like Doctor Lee! Once the Captain and I started our studies and realized that the Selcal Lexorium originated from this area... Well, she's not really the type to let the law get in the way of scientific progress. Our research is for the greater good! We could help thousands.`,
         options: [
             {
                 next: 'CONTINUE_SITUATION',
@@ -297,7 +297,7 @@ var belowScript = {
         prompt: ` 'what are the other bottles?'`,
     },
     'OTHER_BOTTLES': { // ORIGINAL: "Wow. Doctor Lee always did- does- have a sense of humor."
-        text: `Wow. Doctor Lee always does have a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me`,
+        text: `Wow. Doctor Lee always did a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
         prompt: ` 'What is in the plant image?'`,
     },
     'FIRST_PICTURE': {
@@ -344,4 +344,3 @@ var belowScript = {
         text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
     }
 };
-
