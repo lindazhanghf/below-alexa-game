@@ -1,9 +1,9 @@
 var belowScript = {
     'START': {
-        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
+        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. <break time="1s"/> `
     },
     'RETURNING': {
-        text: `Welcome back to Below, you can restart the game by saying start over. `
+        text: `Welcome back to Below, you can restart the game by saying start over. You can always say 'I need help' if you are stuck. <break time="1s"/> `
     },
     'UNHANDLED': {
         text: `I am not sure what you mean. Let me repeat myself here. `
@@ -15,7 +15,7 @@ var belowScript = {
         text: `Sorry I wasn't very clear. `
     },
     'END': {
-        text: `You have finished the first chapter of Below. The second chapter is still under development. You can start over and uncover more stories below the surface.`
+        text: `You have finished the first chapter of Below. The second chapter is still under development. You can exit the game or start over to uncover more stories below the surface.`
     },
     'HELP': {
         text: [
@@ -27,7 +27,7 @@ var belowScript = {
 
     /* PROLOGUE */
     'FIRST': {
-        text: `You're alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: Hello? `,
+        text: `You're alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: <break time="0.5s"/>  Hello? `,
         options: [
             {
                 next: 'HELLO',
@@ -156,18 +156,12 @@ var belowScript = {
     },
     'EXPLAIN_HER': {
         text: `Doctor Sloane Lee is a captain. And doctor. Both. She's very intelligent and diversely qualified.`,
-        // options: [
-        //     {
-        //         next: 'HER_SITUATION',
-        //         triggers: ['anything']
-        //     }
-        // ]
         prompt: '',
     },
 
     /* PART 2 */
     'CONTINUE_SITUATION': {
-        text: `And now we've been talking too long. I should get back to her. She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
+        text: `And now we've been talking too long. I should get back to her. She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. `,
         options: [
             {
                 next: 'TRY_MOVE',
@@ -179,13 +173,14 @@ var belowScript = {
             }
         ],
         prompt: ` 'is she breathing?' or 'lay her down on a bed`,
+        reprompt: `What should I do here? `
     },
     'HER_SITUATION': {
         text: `She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
         options: [
             {
                 next: 'TRY_MOVE',
-                triggers: ['Command_Mo']
+                triggers: ['Command_Move', 'WaitIntent']
             },
             {
                 next: 'PRESSURIZED_SUIT',
@@ -266,16 +261,6 @@ var belowScript = {
         text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
         reprompt: ` What should I do? There could be some medical supplys laying around.`,
         prompt: ` 'Do you have a medical kit?'`,
-        // options: [
-        //     {
-        //         next: 'GRAB_MEDICAL',
-        //         triggers: ['Command_Item']
-        //     },
-        //     {
-        //         next: 'MEDICAL_KIT',
-        //         triggers: ['Command_Help']
-        //     }
-        // ],
     },
     'GRAB_MEDICAL': {
         text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. `,
@@ -297,7 +282,7 @@ var belowScript = {
         prompt: ` 'what are the other bottles?'`,
     },
     'OTHER_BOTTLES': { // ORIGINAL: "Wow. Doctor Lee always did- does- have a sense of humor."
-        text: `Wow. Doctor Lee always did a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
+        text: `Wow. Doctor Lee always did a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over an image of a plant. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
         prompt: ` 'What is in the plant image?'`,
     },
     'FIRST_PICTURE': {
@@ -310,39 +295,75 @@ var belowScript = {
         reprompt: `Should I use this one? Or do you want to see the other bottles?`,
     },
     'FIRST_BADPLANT': {
-        text: `No directions- Wait, nevermind. There are some tiny text at the bottom. `,
+        text: `The box contains several shots. No directions- <break time="0.5s"/> Wait, nevermind. There are some tiny text at the bottom. `,
     },
     'DIRECTION_BADPLANT': {
         text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an actual question mark in the directions.`,
-        first: `It doesn't have any directions- Wait, nevermind. There are some tiny text at the bottom. `,
-        reprompt: `Should I use this one? Or do you want to see the other bottles?`,
+        first: `It doesn't have any directions-  <break time="0.5s"/> Wait, nevermind. There are some tiny text at the bottom. `,
+        reprompt: ` Should I use this one? Or do you want to see the other bottles?`,
     },
     'START_BADPLANT': {
-        text: `Okay, I will use one shot first. `,
+        text: `Okay, I will use one shot first.  <break time="2s"/> `,
     },
-    'START_PICTURE': {
-        text: `Alright then, I will start with 3 milliliter. `,
+    'START_IMAGE': {
+        text: `Alright then, I will start with 3 milliliter.  <break time="2s"/> `,
+    },
+    'SECOND_BADPLANT': {
+        text: `I guess I am gonna use another shot.  <break time="2s"/> `,
+    },
+    'SECOND_IMAGE': {
+        text: `Okay, I am adding 3 more milliliter.  <break time="2s"/> `,
+    },
+    'CONDITION_SAME': {
+        text: `I am not sure about this. It doesn't seem to work. But her face is becoming more and more pale! What should I do? `,
     },
     'CONDITION_WORSE': {
-        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
+        first: `I have a bad feeling about this ... `,
+        text: `Her face is even more pale! Her breath is becoming unstable! Hurry, what do I do? `,
     },
-    'WAIT': {
-        text: `Wait, I think you’re right! Her veins are going back to normal. The redness is reducing all the bumps. It's working`,
-    },
-
-    'END_WAKE': { // ORIGINAL: Yeah, yeah. But listen, thank you.
-        text: `Thank you. For everything. You've actually been pretty helpful- Oh my god! The captain! She's waking up`,
+    'CONDITION_WORST': {
+        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! No... How can I stop this... `,
         options: [
             {
-                next: 'END',
-                triggers: 'anything'
+                next: 'END_DEAD',
+                triggers: ['anything']
+            },
+        ],
+    },
+    'WAIT': {
+        text: ` Wow, I think you’re right! Her face is slowly recovering to normal. It's working! `,
+        options: [
+            {
+                next: 'END_WAKE',
+                triggers: ['anything']
             }
         ]
     },
-    // 'DONT_SAY': {
-    //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
-    // }
-    'REPEAT_GUESS': { // prob say, yeah you are right, cusins thus use this bottle
-        text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
-    }
+    'WAIT_FROMWORSE': {
+        text: `Wait, I think you’re right! Her veins are going back to normal. The redness is reducing all the bumps. It's working`,
+        options: [
+            {
+                next: 'END_WAKE',
+                triggers: ['anything']
+            }
+        ]
+    },
+    'END_WAKE': { // ORIGINAL: Yeah, yeah. But listen, thank you.
+        text: `Thank you. For everything. You've actually been pretty helpful-<break time="0.5s"/> Oh my god! The captain! She's waking up`,
+        options: [
+            {
+                next: 'END',
+                triggers: ['anything']
+            }
+        ]
+    },
+    'END_DEAD': {
+        text: `Ohhhh <break time="0.5s"/> no, I think we lost her... Its all my fault... I'm sorry Doctor Lee... I am so sorry... I think I've had enough, I will end the call here. `,
+    },
+    'GUESS_IMAGE': {
+        text: `Hmmmmm, the plant image looks kinda familiar ... <break time="1s"/> seems like a plant from the Selca family.  <break time="1s"/> shoot. I think she found exactly what we were trying to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are very toxic. This could be the cure, right?`,
+    },
+    'REPEAT_GUESS': {
+        text: `Wait ... the plant image looks kinda familiar ... <break time="1s"/> I think it might be it! The toxic cousin of Selca Lexorium that she might encountered! You think we should use this?.`,
+    },
 };

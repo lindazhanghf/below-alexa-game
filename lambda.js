@@ -25,10 +25,10 @@ const game_progress = {
 
 var belowScript = {
     'START': {
-        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
+        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. <break time="1s"/> `
     },
     'RETURNING': {
-        text: `Welcome back to Below, you can restart the game by saying start over. `
+        text: `Welcome back to Below, you can restart the game by saying start over. You can always say 'I need help' if you are stuck. <break time="1s"/> `
     },
     'UNHANDLED': {
         text: `I am not sure what you mean. Let me repeat myself here. `
@@ -40,7 +40,7 @@ var belowScript = {
         text: `Sorry I wasn't very clear. `
     },
     'END': {
-        text: `You have finished the first chapter of Below. The second chapter is still under development. You can start over and uncover more stories below the surface.`
+        text: `You have finished the first chapter of Below. The second chapter is still under development. You can exit the game or start over to uncover more stories below the surface.`
     },
     'HELP': {
         text: [
@@ -52,7 +52,7 @@ var belowScript = {
 
     /* PROLOGUE */
     'FIRST': {
-        text: `You're alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: Hello? `,
+        text: `You're alone, manning your ship on a voyage through the Philippine Sea when you hear your radio: <break time="0.5s"/>  Hello? `,
         options: [
             {
                 next: 'HELLO',
@@ -181,18 +181,12 @@ var belowScript = {
     },
     'EXPLAIN_HER': {
         text: `Doctor Sloane Lee is a captain. And doctor. Both. She's very intelligent and diversely qualified.`,
-        // options: [
-        //     {
-        //         next: 'HER_SITUATION',
-        //         triggers: ['anything']
-        //     }
-        // ]
         prompt: '',
     },
 
     /* PART 2 */
     'CONTINUE_SITUATION': {
-        text: `And now we've been talking too long. I should get back to her. She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
+        text: `And now we've been talking too long. I should get back to her. She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. `,
         options: [
             {
                 next: 'TRY_MOVE',
@@ -204,13 +198,14 @@ var belowScript = {
             }
         ],
         prompt: ` 'is she breathing?' or 'lay her down on a bed`,
+        reprompt: `What should I do here? `
     },
     'HER_SITUATION': {
         text: `She's still on the ground in her suit. I dragged her out of the airlock and removed her helmet. Her face is quite red. What should I do here? `,
         options: [
             {
                 next: 'TRY_MOVE',
-                triggers: ['Command_Mo']
+                triggers: ['Command_Move', 'WaitIntent']
             },
             {
                 next: 'PRESSURIZED_SUIT',
@@ -220,7 +215,7 @@ var belowScript = {
         prompt: ` 'is she breathing?' or 'lay her down on a bed`,
     },
     'BREATH': {
-        text: `Of course she is breathing! Don't you think I'd be more panicked if my only companion down here wasn't breathing? Well, I guess she's not my ONLY companion, because now you're helping me. Anyway, first thing first, should I move her to her bed? `,
+        text: `Of course she is breathing! Don't you think I'd be more panicked if my only companion down here wasn't breathing? Well, I guess she's not my ONLY companion, because now you're helping me. Anyway, first things first, should I move her to her bed? `,
         options: [
             {
                 next: 'TRY_MOVE',
@@ -291,16 +286,6 @@ var belowScript = {
         text: `Finally got the front off. Man, she really looks and smells like death. I wonder how this growth got through her suit. Some of it's on her skin. We need to get it off.`,
         reprompt: ` What should I do? There could be some medical supplys laying around.`,
         prompt: ` 'Do you have a medical kit?'`,
-        // options: [
-        //     {
-        //         next: 'GRAB_MEDICAL',
-        //         triggers: ['Command_Item']
-        //     },
-        //     {
-        //         next: 'MEDICAL_KIT',
-        //         triggers: ['Command_Help']
-        //     }
-        // ],
     },
     'GRAB_MEDICAL': {
         text: `Yeah, let me grab it ... Okay, so we have the standard first aid stuff. `,
@@ -322,7 +307,7 @@ var belowScript = {
         prompt: ` 'what are the other bottles?'`,
     },
     'OTHER_BOTTLES': { // ORIGINAL: "Wow. Doctor Lee always did- does- have a sense of humor."
-        text: `Wow. Doctor Lee always did a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over plant images. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
+        text: `Wow. Doctor Lee always did a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over an image of a plant. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
         prompt: ` 'What is in the plant image?'`,
     },
     'FIRST_PICTURE': {
@@ -335,42 +320,79 @@ var belowScript = {
         reprompt: `Should I use this one? Or do you want to see the other bottles?`,
     },
     'FIRST_BADPLANT': {
-        text: `No directions- Wait, nevermind. There are some tiny text at the bottom. `,
+        text: `The box contains several shots. No directions- <break time="0.5s"/> Wait, nevermind. There are some tiny text at the bottom. `,
     },
     'DIRECTION_BADPLANT': {
         text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an actual question mark in the directions.`,
-        first: `No directions- Wait, nevermind. There are some tiny text at the bottom. `,
-        reprompt: `Should I use this one? Or do you want to see the other bottles?`,
+        first: `It doesn't have any directions-  <break time="0.5s"/> Wait, nevermind. There are some tiny text at the bottom. `,
+        reprompt: ` Should I use this one? Or do you want to see the other bottles?`,
     },
     'START_BADPLANT': {
-        text: `Okay, I will use one shot first. `,
+        text: `Okay, I will use one shot first.  <break time="2s"/> `,
     },
-    'START_PICTURE': {
-        text: `Alright then, I will start with 3 milliliter. `,
+    'START_IMAGE': {
+        text: `Alright then, I will start with 3 milliliter.  <break time="2s"/> `,
+    },
+    'SECOND_BADPLANT': {
+        text: `I guess I am gonna use another shot.  <break time="2s"/> `,
+    },
+    'SECOND_IMAGE': {
+        text: `Okay, I am adding 3 more milliliter.  <break time="2s"/> `,
+    },
+    'CONDITION_SAME': {
+        text: `I am not sure about this. It doesn't seem to work. But her face is becoming more and more pale! What should I do? `,
     },
     'CONDITION_WORSE': {
-        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! Hurry, what do I do`,
+        first: `I have a bad feeling about this ... `,
+        text: `Her face is even more pale! Her breath is becoming unstable! Hurry, what do I do? `,
     },
-    'WAIT': {
-        text: `Wait, I think you’re right! Her veins are going back to normal. The redness is reducing all the bumps. It's working`,
-    },
-
-    'END_WAKE': { // ORIGINAL: Yeah, yeah. But listen, thank you.
-        text: `Thank you. For everything. You've actually been pretty helpful- Oh my god! The captain! She's waking up`,
+    'CONDITION_WORST': {
+        text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! No... How can I stop this... `,
         options: [
             {
-                next: 'END',
-                triggers: 'anything'
+                next: 'END_DEAD',
+                triggers: ['anything']
+            },
+        ],
+    },
+    'WAIT': {
+        text: ` Wow, I think you’re right! Her face is slowly recovering to normal. It's working! `,
+        options: [
+            {
+                next: 'END_WAKE',
+                triggers: ['anything']
             }
         ]
     },
-    // 'DONT_SAY': {
-    //     text: `Don't say that to me! She's going to live. Crap, crap, crap. What do I do!`,
-    // }
-    'REPEAT_GUESS': { // prob say, yeah you are right, cusins thus use this bottle
-        text: `I think- shoot. I think she found exactly what we were tyring to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of reaserch on any of them given where they all grow.`,
-    }
+    'WAIT_FROMWORSE': {
+        text: `Wait, I think you’re right! Her veins are going back to normal. The redness is reducing all the bumps. It's working`,
+        options: [
+            {
+                next: 'END_WAKE',
+                triggers: ['anything']
+            }
+        ]
+    },
+    'END_WAKE': { // ORIGINAL: Yeah, yeah. But listen, thank you.
+        text: `Thank you. For everything. You've actually been pretty helpful-<break time="0.5s"/> Oh my god! The captain! She's waking up`,
+        options: [
+            {
+                next: 'END',
+                triggers: ['anything']
+            }
+        ]
+    },
+    'END_DEAD': {
+        text: `Ohhhh <break time="0.5s"/> no, I think we lost her... Its all my fault... I'm sorry Doctor Lee... I am so sorry... I think I've had enough, I will end the call here. `,
+    },
+    'GUESS_IMAGE': {
+        text: `Hmmmmm, the plant image looks kinda familiar ... <break time="1s"/> seems like a plant from the Selca family.  <break time="1s"/> shoot. I think she found exactly what we were trying to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are very toxic. This could be the cure, right?`,
+    },
+    'REPEAT_GUESS': {
+        text: `Wait ... the plant image looks kinda familiar ... <break time="1s"/> I think it might be it! The toxic cousin of Selca Lexorium that she might encountered! You think we should use this?.`,
+    },
 };
+
 
 // Using the same code as in languageModel
 const characters = [
@@ -420,104 +442,116 @@ const senses = [
   }
 ];
 const items = [
-  {
-    "id": "sample",
-    "name": {
-      "value": "sample",
-      "synonyms": [
-        "research",
-        "samples"
-      ]
-    }
-  },
-  {
-    "id": "airLock",
-    "name": {
-      "value": "air lock",
-      "synonyms": [
-        "lock",
-        "submarine",
-        "sub"
-      ]
-    }
-  },
-  {
-    "id": "firstAid",
-    "name": {
-      "value": "first aid",
-      "synonyms": [
-        "emergency kit",
-        "health kit",
-        "first aid kit",
-        "medicine",
-        "medical kit",
-        "medical supply"
-      ]
-    }
-  },
-  {
-    "id": "antiseptic",
-    "name": {
-      "value": "antiseptic",
-      "synonyms": [
-        "wipes",
-        "antiseptic wipes"
-      ]
-    }
-  },
-  {
-    "id": "selca",
-    "name": {
-      "value": "Selca",
-      "synonyms": [
-        "medicinal plant",
-        "cousin"
-      ]
-    }
-  },
-  {
-    "id": "plant",
-    "name": {
-      "value": "plant",
-      "synonyms": [
-        "moldy",
-        "dark"
-      ]
-    }
-  },
-  {
-    "id": "picture",
-    "name": {
-      "value": "picture",
-      "synonyms": [
-        "plant image",
-        "red x",
-        "plant picture",
-        "plant pictures",
-        "plant images"
-      ]
-    }
-  },
-  {
-    "id": "bottles",
-    "name": {
-      "value": "bottles",
-      "synonyms": [
-        "other bottles"
-      ]
-    }
-  },
-  {
-    "id": "badPlant",
-    "name": {
-      "value": "bad plant",
-      "synonyms": [
-        "bad plant bottle",
-        "in case of bad plant"
-      ]
-    }
-  }
-];
+          {
+            "id": "sample",
+            "name": {
+              "value": "sample",
+              "synonyms": [
+                "research",
+                "samples"
+              ]
+            }
+          },
+          {
+            "id": "airLock",
+            "name": {
+              "value": "air lock",
+              "synonyms": [
+                "lock",
+                "submarine",
+                "sub"
+              ]
+            }
+          },
+          {
+            "id": "firstAid",
+            "name": {
+              "value": "first aid",
+              "synonyms": [
+                "emergency kit",
+                "health kit",
+                "first aid kit",
+                "medicine",
+                "medical kit",
+                "medical supply",
+                "1st aid kit"
+              ]
+            }
+          },
+          {
+            "id": "antiseptic",
+            "name": {
+              "value": "antiseptic",
+              "synonyms": [
+                "wipes",
+                "antiseptic wipes"
+              ]
+            }
+          },
+          {
+            "id": "selca",
+            "name": {
+              "value": "Selca",
+              "synonyms": [
+                "medicinal plant",
+                "cousin"
+              ]
+            }
+          },
+          {
+            "id": "plant",
+            "name": {
+              "value": "plant",
+              "synonyms": [
+                "moldy",
+                "dark"
+              ]
+            }
+          },
+          {
+            "id": "plantImage",
+            "name": {
+              "value": "picture",
+              "synonyms": [
+                "red x",
+                "image",
+                "picture",
+                "chinese"
+              ]
+            }
+          },
+          {
+            "id": "bottles",
+            "name": {
+              "value": "bottles",
+              "synonyms": [
+                "other bottles",
+                "labels"
+              ]
+            }
+          },
+          {
+            "id": "badPlant",
+            "name": {
+              "value": "bad plant",
+              "synonyms": [
+                "bad",
+                "shot"
+              ]
+            }
+          },
+          {
+            "id": "this",
+            "name": {
+              "value": "this",
+              "synonyms": [
+                "this one",
+                "this 1",
+                "another"
+              ]
+            }
+          }
+        ];
 
 
 var handlers = {
@@ -526,21 +560,24 @@ var handlers = {
             this.attributes.game = {
                 'state': game_state.START,
                 'progressIndex': game_progress.PROLOGUE,
-                // 'progress': {},
-                'slot': '',
+                'progress': {},
+                'slot': 'None',
                 'visited' : ['FIRST'],
                 'currentScript' : ['FIRST'],
-                'currentIntent' : ''
+                'currentIntent' : 'None'
             };
             if (isDebug) {
                 this.attributes.game = {
                     'state': game_state.GAME,
-                    'progressIndex': game_progress.PART_1,
-                    'slot': '',
-                    'visited' : ['KIND_OF_ILLEGAL'],
-                    'currentScript' : ['KIND_OF_ILLEGAL'],
-                    'currentIntent' : ''
+                    'progressIndex': game_progress.PART_3,
+                    'progress': {},
+                    'slot': 'None',
+                    'visited' : ['GROWTH_SKIN'],
+                    'currentScript' : ['GROWTH_SKIN'],
+                    'currentIntent' : 'None'
                 }
+                this.attributes.game.progress['badPlant'] = 0;
+                this.attributes.game.progress['plantImage'] = 0;
             }
         } else {
             this.attributes.game.state = game_state.RETURNING;
@@ -552,14 +589,6 @@ var handlers = {
    'handleIntent': function() {
         console.log('Handling: ' + this.attributes.game.currentIntent);
         this.attributes.game = updateProgress(this.attributes.game);
-
-        // Add the current script to the visited list
-        // this.attributes.game.currentScript.forEach( (script) => {
-        //     if (this.attributes.game.visited.indexOf(script) === -1) {
-        //         this.attributes.game.visited.push(script);
-        //     }
-        // }, this);
-
         this.emit('GenerateDialog');
    },
 
@@ -574,7 +603,7 @@ var handlers = {
             speechOutput += belowScript.HELP.text[index];
             speechOutput += belowScript[lastScript].prompt;
             this.attributes.game.state = game_state.GAME;
-            this.response.speak(speechOutput).listen();
+            this.response.speak(speechOutput).listen(speechOutput);
             this.emit(':responseReady');
             return;
         }
@@ -594,11 +623,7 @@ var handlers = {
                 // Add the current script to the visited list
                 this.attributes.game.visited.push(currScript);
             }
-            // if (belowScript[currScript].first && this.attributes.game.visited.indexOf(currScript) === -1) {
-            //     speechOutput += belowScript[currScript].first;
-            // }
             speechOutput = speechOutput + belowScript[currScript].text;
-            // this.attributes.game.visited.push(currScript);
         }
 
         var reprompt = '';
@@ -619,12 +644,13 @@ var handlers = {
 
     'AMAZON.StartOverIntent': function() {
         this.attributes.game = {
-            'state': game_state.GAME,
+            'state': game_state.START,
             'progressIndex': game_progress.PROLOGUE,
-            // 'progress': {},
+            'progress': {},
+            'slot': 'None',
+            'visited' : ['FIRST'],
             'currentScript' : ['FIRST'],
-            'currentIntent' : '',
-            'visited' : ['FIRST']
+            'currentIntent' : 'None'
         };
         this.emit('GenerateDialog');
     },
@@ -661,11 +687,11 @@ var handlers = {
         this.emit('handleIntent');
     },
 
-    // // Save state
-    // 'SessionEndedRequest': function() {
-    //     console.log('session ended!');
-    //     this.emit(':saveState', true);
-    // },
+    // Save state
+    'SessionEndedRequest': function() {
+        console.log('session ended!');
+        this.emit(':saveState', true);
+    },
 
     /* CUSTOM INTENTS */
     'YesIntent': function () {
@@ -754,7 +780,16 @@ var updateProgress = function(game_obj) {
         case game_progress.PART_2:
             return part2(game_obj);
         case game_progress.PART_3:
-            return part3(game_obj);
+            game_obj = part3(game_obj);
+            let newScript = game_obj.currentScript[game_obj.currentScript.length - 1];
+            if (newScript.slice(0, 4) == 'END') {
+                game_obj.progressIndex = game_progress.EPILOGUE;
+            } else if (newScript.slice(0, 5) == 'WAIT') {
+                game_obj.progressIndex = game_progress.EPILOGUE;
+            }
+            return game_obj;
+        case game_progress.EPILOGUE:
+            return epilogue(game_obj);
         default:
             return game_obj;
     }
@@ -766,17 +801,6 @@ var prologue = function(game) {
     // Enter part 1
     if (game.currentScript[game.currentScript.length - 1] == 'THANK_GOD') {
         game.progressIndex = game_progress.PART_1;
-        // Setting up for part 1
-        // game.progress = {
-        //     // 'slot': '',
-        //     'who': false,
-        //     'situation': false,
-        //     'samples': false,
-        //     'submarine': false,
-        //     'exploration': false,
-        //     'research': false,
-        //     'askedWhere': false,
-        // };
     }
 
     return game;
@@ -818,22 +842,18 @@ var part1 = function(game) {
     } else { // No options, proceed dialogs by asking questions
         switch (game.currentIntent) {
             case 'AskWho':
-                // game.progress.who = true;
                 game.currentScript = ['SELF_INTRODUCTION'];
                 break;
             case 'AskSituation':
                 console.log('PART 1 - Asking about situation');
-                // game.progress.situation = true;
                 game.currentScript = ['UNCONSCIOUS'];
                 break;
             case 'AskWhat':
                 console.log('PART 1 - Asking about : ' + slot);
                 let slot_result = findSlotID(slot, items);
                 if (slot_result == 'airLock') {
-                    // game.progress.submarine = true;
                     game.currentScript = ['EXPLAIN_SUBMARINE'];
                 } else if (slot_result == 'sample') {
-                    // game.progress.samples = true;
                     game.currentScript = ['EXPLAIN_SAMPLE'];
                 } else {
                     game.state = game_state.UNHANDLED;
@@ -841,17 +861,13 @@ var part1 = function(game) {
                 break;
             case 'AskWhere':
                 if (game.visited.indexOf('EXPLAIN_SUBMARINE') === -1) { // 1st time asking where
-                    // game.progress.submarine = true;
                     game.currentScript = ['EXPLAIN_SUBMARINE'];
-                    // game.progress.askedWhere = true;
                 } else {                         // 2nd time asking where
                     if (game.visited.indexOf('EXPLORATION') === -1) {
                         game.currentScript = ['NEED_INTRODUCTION', 'EXPLORATION']
-                        // game.progress.who = true;
                     } else {
                         game.currentScript = ['EXPLORATION'];
                     }
-                    // game.progress.exploration = true;
                 }
                 break;
             case 'Special_Help':
@@ -881,7 +897,6 @@ var part2 = function(game) {
         console.log('Part 2 - visited breath yes? ' + game.visited.indexOf('BREATH'));
         if (game.visited.indexOf('BREATH') === -1) {
             game.currentScript = ['BREATH'];
-            // game.progress.askedBreath = true;
             return game;
         } else {
             if (currIntent != 'AskSituation') {
@@ -909,7 +924,6 @@ var part2 = function(game) {
         case 'IT_SMELLS':
             if (currIntent == 'AskWhat' && slot_result != 'smell' && slot_result != 'look') {
                 game.currentScript = ['GUESS_PLANT'];
-                // game.progress.guessPlant = true;
                 return game;
             }
         case 'INCISION':
@@ -925,8 +939,6 @@ var part2 = function(game) {
             return game;
         default:
             break;
-        // case 'CONTINUE_SITUATION':
-        // case 'HER_SITUATION':
     }
 
     game = nextDialog(game);
@@ -936,22 +948,26 @@ var part2 = function(game) {
         game.progressIndex = game_progress.END;
     } else if (newScript == 'GROWTH_SKIN') {
         game.progressIndex = game_progress.PART_3;
-        // game.progress.firstPicture = true; // First time triggering this dialogue?
-        // game.progress.firstBadPlant = true; // First time triggering this dialogue?
+        game.progress['badPlant'] = 0;
+        game.progress['plantImage'] = 0;
     }
 
     return game;
 }
 
 var part3 = function(game) {
-    console.log('========== PART 3 ========== ');
     let lastScript = game.currentScript[game.currentScript.length - 1];
-    let slot_item = findSlotID(game.slot, items);
+    console.log('========== PART 3 ========== [last]:'+lastScript);
 
+    if (belowScript[lastScript].options) return nextDialog(game);
+
+    let slot_item = findSlotID(game.slot, items);
     if (game.currentIntent == 'AskWhat' && slot_item == 'plant') {
-        game.currentScript = [(game.visited.indexOf('GUESS_PLANT') === -1) ? 'REPEAT_GUESS' : 'GUESS_PLANT'];
+        game.currentScript = [(game.visited.indexOf('GUESS_PLANT') === -1) ? 'GUESS_IMAGE' : 'REPEAT_GUESS'];
+        return game;
     }
 
+    var newGame;
     switch (lastScript) {
         case 'GROWTH_SKIN':
             if (game.currentIntent == 'Command_Item' || game.currentIntent == 'AskWhat') {
@@ -975,44 +991,108 @@ var part3 = function(game) {
             }
             break;
         case 'DIRECTION_BADPLANT':
-        case 'DIRECTION_PICTURE':
-            let bottle_name = lastScript.slice(10);
-            console.log('Bottle name: ' + bottle_name);
             if (game.currentIntent == 'YesIntent' || game.currentIntent == 'NextIntent') {
-                game.currentScript = [ 'START_' + bottle_name, 'CONDITION_WORSE'];
-                return game;
+                slot_item = 'badPlant';
+                newGame = useMedicine(game, slot_item);
+            } else if (game.currentIntent == 'Command_Item' || game.currentIntent == 'AskWhat') {
+                if (slot_item == 'this') slot_item = 'badPlant';
+                newGame = useMedicine(game, slot_item);
             }
-        case 'OTHER_BOTTLES':
-            if (slot_item == 'picture') {
-                game.currentScript = ['DIRECTION_PICTURE'];
-                // if (game.progress.firstPicture) {
-                //     game.currentScript = ['FIRST_PICTURE', 'DIRECTION_PICTURE'];
-                //     game.progress.firstPicture = false;
-                // } else {
-                //     game.currentScript = ['DIRECTION_PICTURE'];
-                // }
-                return game;
-            } else if (slot_item == 'badPlant') {
-                game.currentScript = ['DIRECTION_BADPLANT'];
-                // if (game.progress.firstBadPlant) {
-                //     game.currentScript = ['FIRST_BADPLANT', 'DIRECTION_BADPLANT'];
-                //     game.progress.firstBadPlant = false;
-                // } else {
-                //     game.currentScript = ['DIRECTION_BADPLANT'];
-                // }
-                return game;
-            }
+            if (newGame) return newGame;
             break;
-        case 'CONDITION_WORSE':
+        case 'GUESS_IMAGE':
+        case 'REPEAT_GUESS':
+        case 'DIRECTION_PICTURE':
+            if (game.currentIntent == 'YesIntent' || game.currentIntent == 'NextIntent') {
+                slot_item = 'plantImage';
+                newGame = useMedicine(game, slot_item);
+            } else if (game.currentIntent == 'Command_Item' || game.currentIntent == 'AskWhat') {
+                if (slot_item == 'this') slot_item = 'plantImage';
+                newGame = useMedicine(game, slot_item);
+            }
+            if (newGame) return newGame;
+            break;
+        case 'OTHER_BOTTLES':
+            if ((game.visited.indexOf('DIRECTION_PICTURE') === -1) && slot_item == 'picture') {
+                game.currentScript = ['DIRECTION_PICTURE'];
+                return game;
+            } else if ((game.visited.indexOf('DIRECTION_BADPLANT') === -1) && slot_item == 'badPlant') {
+                game.currentScript = ['DIRECTION_BADPLANT'];
+                return game;
+            } else if (game.currentIntent == 'Command_Item' || game.currentIntent == 'AskWhat') {
+                newGame = useMedicine(game, slot_item);
+            }
+            if (newGame) return newGame;
+            break;
+        case 'CONDITION_SAME':
             if (game.currentIntent == 'WaitIntent') {
                 game.currentScript = ['WAIT'];
+                return game;
             }
+        case 'CONDITION_WORSE':
+        case 'CONDITION_WORST':
+            if (game.currentIntent == 'Command_Item' || game.currentIntent == 'AskWhat') {
+                newGame = useMedicine(game, slot_item);
+            }
+            if (newGame) return newGame;
             break;
         default:
             break;
     }
 
     game.state = game_state.UNHANDLED;
+    return game;
+}
+
+var epilogue = function(game) {
+    game = nextDialog(game);
+    if (game.currentScript[game.currentScript.length - 1].slice(0, 4) == 'END') {
+        game.progressIndex = game_progress.END;
+    }
+    this.attributes.game = {
+        'state': game_progress.END,
+        'progressIndex': game_progress.PROLOGUE,
+        'progress': {},
+        'slot': 'None',
+        'visited' : ['FIRST'],
+        'currentScript' : ['FIRST'],
+        'currentIntent' : 'None'
+    };
+    return game;
+}
+
+var useMedicine = function(game, slot_item) {
+    console.log('PART_3 - use Medicine: ' + slot_item);
+    switch (slot_item) {
+        case 'badPlant':
+            game.progress.badPlant += 1;
+            game.currentScript = (game.visited.indexOf('START_BADPLANT') === -1) ? ['START_BADPLANT'] : ['SECOND_BADPLANT'];
+            return checkMedicine(game);
+        case 'plantImage':
+            game.progress.plantImage += 1;
+            game.currentScript = (game.visited.indexOf('START_IMAGE') === -1) ? ['START_IMAGE'] : ['SECOND_IMAGE'];
+            return checkMedicine(game);
+        case 'bottles':
+            game.currentScript = ['OTHER_BOTTLES'];
+            return game;
+        default:
+            break;
+    }
+    return;
+}
+
+var checkMedicine = function(game) {
+    if (game.progress.badPlant >= 2) {
+        game.currentScript.push('CONDITION_WORST');
+    } else if (game.progress.plantImage >= 2) {
+        game.currentScript.push('WAIT')
+    } else if (game.progress.badPlant === 1 && game.progress.plantImage === 1) {
+        game.currentScript.push('WAIT_FROMWORSE');
+    } else if (game.progress.plantImage === 1) {
+        game.currentScript.push('CONDITION_SAME');
+    } else {
+        game.currentScript.push('CONDITION_WORSE');
+    }
     return game;
 }
 
@@ -1039,11 +1119,11 @@ var nextDialog = function(game) {
     return game;
 }
 
-var setUnhandled = function(game_obj) {
-    game_obj.state = game_state.UNHANDLED;
-    console.log('Failed to trigger');
-    return game_obj;
-}
+// var setUnhandled = function(game_obj) {
+//     game_obj.state = game_state.UNHANDLED;
+//     console.log('Failed to trigger');
+//     return game_obj;
+// }
 
 var findSlotID = function(input_slot, slots) {
     console.log('PARSING SLOT - input: ' + input_slot);
@@ -1068,7 +1148,7 @@ var findSlotID = function(input_slot, slots) {
 
 exports.handler = function(event, context, callback){
     var alexa = Alexa.handler(event, context);
-    // alexa.dynamoDBTableName = 'BelowGame';
+    alexa.dynamoDBTableName = 'BelowGame';
     alexa.registerHandlers(handlers);
     alexa.execute();
 };
