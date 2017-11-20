@@ -1,6 +1,6 @@
 var belowScript = {
     'START': {
-        text: `Welcome to Below, an interactive narrative you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
+        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. `
     },
     'RETURNING': {
         text: `Welcome back to Below, you can restart the game by saying start over. `
@@ -195,7 +195,7 @@ var belowScript = {
         prompt: ` 'is she breathing?' or 'lay her down on a bed`,
     },
     'BREATH': {
-        text: `Of course she is breathing! Don't you think I'd be more panicked if my only companion down here wasn't breathing? Well, I guess she's not my ONLY companion, because now you're helping me. Anyway, first thing first, should I move her to her bed? `,
+        text: `Of course she is breathing! Don't you think I'd be more panicked if my only companion down here wasn't breathing? Well, I guess she's not my ONLY companion, because now you're helping me. Anyway, first things first, should I move her to her bed? `,
         options: [
             {
                 next: 'TRY_MOVE',
@@ -306,6 +306,7 @@ var belowScript = {
     'DIRECTION_PICTURE': {
         text: `It says to use a syringe to inject the liquid into her bloodstream around the affected area starting with 3 milliliter. Increase dosage if needed. Should I try this one?`,
         prompt: ` 'Go ahead'`,
+        first: `The directions- Okay, wow there's directions but no proper label. Nice. `,
         reprompt: `Should I use this one? Or do you want to see the other bottles?`,
     },
     'FIRST_BADPLANT': {
@@ -313,6 +314,7 @@ var belowScript = {
     },
     'DIRECTION_BADPLANT': {
         text: `It says 'one shot. safe'. 'two shots, question mark'. She wrote an actual question mark in the directions.`,
+        first: `It doesn't have any directions- Wait, nevermind. There are some tiny text at the bottom. `,
         reprompt: `Should I use this one? Or do you want to see the other bottles?`,
     },
     'START_BADPLANT': {
