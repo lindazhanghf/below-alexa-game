@@ -764,7 +764,7 @@ var prologue = function(game) {
     game = nextDialog(game);
 
     // Enter part 1
-    if (game.currentScript == 'THANK_GOD') {
+    if (game.currentScript[game.currentScript.length - 1] == 'THANK_GOD') {
         game.progressIndex = game_progress.PART_1;
         // Setting up for part 1
         // game.progress = {
