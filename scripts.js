@@ -229,11 +229,11 @@ var belowScript = {
     },
     'IT_SMELLS': {
         text: `It smells like moldy death- like something's been decaying on the inside of this suit for a really long time. It's not possible though, because she was only gone for two hours. This is bad. We need to hurry`,
-        prompt: ` 'we have to get rid of that'`,
+        prompt: ` 'what does it look like', or 'we have to get rid of that'`,
     },
     'GUESS_PLANT': { // INFO
         text: `I think- shoot. I think she found exactly what we were trying to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of research on any of them given where they all grow.`,
-        prompt: ` 'we should remove her suit'`,
+        prompt: ` 'Be careful!' or 'we should remove her suit'`,
         options: [
             {
                 next: 'PEEL_OFF',
@@ -303,7 +303,7 @@ var belowScript = {
     'OTHER_BOTTLES': { // ORIGINAL: "Wow. Doctor Lee always did- does- have a sense of humor."
         text: ` One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over an image of a plant. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
         first: `Wow. Doctor Lee always did a sense of humor. `,
-        prompt: ` 'What is in the plant image?'`,
+        prompt: ` 'what is the plant?', 'go with the one for bad plant'`,
         reprompt: ` Should I try the one for bad plant, or the one with plant image?`,
     },
     'FIRST_PICTURE': {
