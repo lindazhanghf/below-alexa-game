@@ -250,11 +250,15 @@ var belowScript = {
         text: `You’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
         options: [
             {
+                next: 'RISK_LIFE',
+                triggers: ['NoIntent']
+            },
+            {
                 next: 'GROWTH_SKIN',
                 triggers: ['anything']
             },
         ],
-        prompt: ` 'good luck'`,
+        prompt: ` 'good luck', or 'stop'`,
     },
     'RISK_LIFE': {
         text: `She’d be willing to risk her life for me, so I have to do the same. I’m going to pull the rest of her suit off by making an incision on the other side`,
@@ -333,11 +337,12 @@ var belowScript = {
     },
     'CONDITION_SAME': {
         text: `I am not sure about this. It doesn't seem to work. But her face is becoming more and more pale! What should I do? `,
-        prompt: ` 'try waiting for a second', or 'try the one for bad plant'`
+        prompt: ` 'maybe waiting for a second', or 'try the one for bad plant'`
     },
     'CONDITION_WORSE': {
         first: `I have a bad feeling about this ... `,
         text: `Her face is even more pale! Her breath is becoming unstable! Hurry, what do I do? `,
+        prompt: ` 'try the one with plant image', or 'use the one for bad plant'`
     },
     'CONDITION_WORST': {
         text: `Oh, no. This stuff is making her worse! Her veins are popping out! The infected spots are so red! No... How can I stop this... `,
@@ -347,6 +352,7 @@ var belowScript = {
                 triggers: ['anything']
             },
         ],
+        prompt: ` 'maybe try the other bottles`
     },
     'WAIT': {
         text: ` Wow, I think you’re right! Her face is slowly recovering to normal. It's working! `,
@@ -355,7 +361,8 @@ var belowScript = {
                 next: 'END_WAKE',
                 triggers: ['anything']
             }
-        ]
+        ],
+        prompt: ` 'Good job!'`,
     },
     'WAIT_FROMWORSE': {
         text: `Wait, I think you’re right! Her veins are going back to normal. The redness is reducing all the bumps. It's working`,
@@ -364,7 +371,8 @@ var belowScript = {
                 next: 'END_WAKE',
                 triggers: ['anything']
             }
-        ]
+        ],
+        prompt: ` 'Good job!'`,
     },
     'END_WAKE': { // ORIGINAL: Yeah, yeah. But listen, thank you.
         text: `Thank you. For everything. You've actually been pretty helpful-<break time="0.5s"/> Oh my god! The captain! She's waking up`,
@@ -373,15 +381,25 @@ var belowScript = {
                 next: 'END',
                 triggers: ['anything']
             }
-        ]
+        ],
+        prompt: ` 'That's awesome!`
     },
     'END_DEAD': {
         text: `Ohhhh <break time="0.5s"/> no, I think we lost her... Its all my fault... I'm sorry Doctor Lee... I am so sorry... I think I've had enough, I will end the call here. `,
+        options: [
+            {
+                next: 'END',
+                triggers: ['anything']
+            }
+        ],
+        prompt: ` I am sorry, bye`
     },
     'GUESS_IMAGE': {
         text: `Hmmmmm, the plant image looks kinda familiar ... <break time="1s"/> seems like a plant from the Selca family.  <break time="1s"/> shoot. I think she found exactly what we were trying to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are very toxic. This could be the cure, right?`,
+        prompt: ` 'Yes, this is it', or 'I think we should use the one for bad plant'`,
     },
     'REPEAT_GUESS': {
         text: `Wait ... the plant image looks kinda familiar ... <break time="1s"/> I think it might be it! The toxic cousin of Selca Lexorium that she might encountered! You think we should use this?.`,
+        prompt: ` 'Yes, this is it', or 'I think we should use the one for bad plant'`,
     },
 };
