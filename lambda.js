@@ -1,8 +1,12 @@
-"use strict"; /* Documentation: https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs */
+/* Developed by Ziyin Zhang
+   Novemeber 20th, 2017
+*/
+
+"use strict";
 
 var Alexa = require("alexa-sdk");
 
-const isDebug = true;
+const isDebug = false;
 
 const game_state = {
     START: 'START',
@@ -25,7 +29,7 @@ const game_progress = {
 
 var belowScript = {
     'START': {
-        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. <break time="1s"/> `
+        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. Your progress will be saved upon exiting the game. You can always say 'I need help' if you are stuck. <break time="1s"/> `
     },
     'RETURNING': {
         text: `Welcome back to Below, you can restart the game by saying start over. You can always say 'I need help' if you are stuck. <break time="1s"/> `
@@ -40,7 +44,7 @@ var belowScript = {
         text: `Sorry I wasn't very clear. `
     },
     'END': {
-        text: `You have finished the first chapter of Below. The second chapter is still under development. You can exit the game or start over to uncover more stories below the surface.`
+        text: `You have finished the first chapter of Below. The second chapter is still under development. You can exit the game or start over to uncover more stories below the surface. `
     },
     'HELP': {
         text: [
@@ -222,7 +226,7 @@ var belowScript = {
                 triggers: ['YesIntent', 'Command_Move', 'NextIntent']
             },
         ],
-        prompt: ` 'Good idea' or Don't move her that much`,
+        prompt: ` 'Good idea'`,
     },
     'TRY_MOVE': {   // ... After a moment of trying, hard work sound, failed
         text: `Alright, give me a sec while I try moving her ... she's still in her pressurized suit. It's really heavy, so I'll need to remove it first. What do you think? `,
@@ -242,15 +246,15 @@ var belowScript = {
                 triggers: ['YesIntent', 'NextIntent']
             },
         ],
-        prompt: ` 'go ahead' or 'stop!'`,
+        prompt: ` 'go ahead' '`,
     },
     'INCISION': { // zipper sound, or cutting cloths sound, grossed out voice
-        text: `Alright. I’m going in from the side...but it smells kind of...odd. Oh god, this is gross`,
+        text: `Alright. I’m going in from the side...but it smells kind of...odd.  <break time="1s"/>  Oh god, this is gross`,
         prompt: ` 'what does it look like' or 'what does it smell like'`,
     },
     'IT_LOOKS': {
         text: `It looks dark and moldy, Some of it's on her skin! This looks horrible. We need to do something about it`,
-        prompt: ` 'we need to get it off her skin'`,
+        prompt: ` 'we need to get it off her skin', or 'what is the dark thing?'`,
     },
     'IT_SMELLS': {
         text: `It smells like moldy death- like something's been decaying on the inside of this suit for a really long time. It's not possible though, because she was only gone for two hours. This is bad. We need to hurry`,
@@ -258,7 +262,18 @@ var belowScript = {
     },
     'GUESS_PLANT': { // INFO
         text: `I think- shoot. I think she found exactly what we were trying to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of research on any of them given where they all grow.`,
-        prompt: ` 'we should remove it at once'`,
+        prompt: ` 'we should remove her suit'`,
+        options: [
+            {
+                next: 'PEEL_OFF',
+                triggers: ['YesIntent', 'NextIntent', 'Command_Remove']
+            },
+            {
+                next: 'RISK_LIFE',
+                triggers: ['NoIntent']
+            }
+        ],
+        reprompt: ` I think we need to remove her suit.`,
     },
     'PEEL_OFF': {
         text: `You’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
@@ -299,16 +314,22 @@ var belowScript = {
     'ANTISEPTIC_WIPES': {
         text: `I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
         reprompt: ` What should I use? The antiseptic wipes, or the other bottles?`,
-        prompt: ` Try the antiseptic.`,
+        prompt: ` 'Try the antiseptic' or 'Use the other bottles'`,
     },
     'USE_ANTISEPTIC': {
         text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shoot, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
         reprompt: ` Maybe we should see the other bottles`,
         prompt: ` 'what are the other bottles?'`,
     },
+    'USED_ANTISEPTIC': {
+        text: ` I have already tried the antispetic wipes, and it doesn't help much. Maybe we should look at the other bottles? `,
+        prompt: ` 'Use the other bottles'`,
+    },
     'OTHER_BOTTLES': { // ORIGINAL: "Wow. Doctor Lee always did- does- have a sense of humor."
-        text: `Wow. Doctor Lee always did a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over an image of a plant. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
+        text: ` One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over an image of a plant. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
+        first: `Wow. Doctor Lee always did a sense of humor. `,
         prompt: ` 'What is in the plant image?'`,
+        reprompt: ` Should I try the one for bad plant, or the one with plant image?`,
     },
     'FIRST_PICTURE': {
         text: `The directions- Okay, wow there's directions but no proper label. Nice. `,
@@ -392,6 +413,8 @@ var belowScript = {
         text: `Wait ... the plant image looks kinda familiar ... <break time="1s"/> I think it might be it! The toxic cousin of Selca Lexorium that she might encountered! You think we should use this?.`,
     },
 };
+
+
 
 
 // Using the same code as in languageModel
@@ -516,7 +539,8 @@ const items = [
                 "red x",
                 "image",
                 "picture",
-                "chinese"
+                "chinese",
+                "plant image"
               ]
             }
           },
@@ -608,6 +632,14 @@ var handlers = {
             return;
         }
 
+        if (this.attributes.game.state == game_state.END) {
+            speechOutput += belowScript.END.text;
+            this.attributes.game.state = game_state.GAME;
+            this.response.speak(speechOutput).listen(speechOutput);
+            this.emit(':responseReady');
+            return;
+        }
+
         console.log('GenerateDialog: (' + this.attributes.game.state + ') ' + this.attributes.game.currentScript);
         if (this.attributes.game.state != game_state.GAME) {
             speechOutput += belowScript[this.attributes.game.state].text;
@@ -655,6 +687,11 @@ var handlers = {
         this.emit('GenerateDialog');
     },
 
+    'AMAZON.StopIntent': function() {
+        this.attributes.game.currentIntent = 'NoIntent';
+        this.emit('handleIntent');
+    },
+
     'AMAZON.IgnoreAction': function() {
         this.attributes.game.state = game_state.IGNORE;
         this.emit('GenerateDialog');
@@ -690,6 +727,17 @@ var handlers = {
     // Save state
     'SessionEndedRequest': function() {
         console.log('session ended!');
+        if (this.attributes.game.state == game_state.END) {
+            this.attributes.game = {
+                'state': game_progress.START,
+                'progressIndex': game_progress.PROLOGUE,
+                'progress': {},
+                'slot': 'None',
+                'visited' : ['FIRST'],
+                'currentScript' : ['FIRST'],
+                'currentIntent' : 'None'
+            }
+        };
         this.emit(':saveState', true);
     },
 
@@ -933,6 +981,8 @@ var part2 = function(game) {
                 game.currentScript = ['IT_LOOKS'];
             } else if (currIntent == 'Command_Remove') {
                 game.currentScript = ['PEEL_OFF'];
+            } else if (currIntent == 'NoIntent') {
+                game.currentScript = ['RISK_LIFE'];
             } else {
                 game.state = game_state.UNHANDLED;
             }
@@ -967,6 +1017,15 @@ var part3 = function(game) {
         return game;
     }
 
+    if (slot_item == 'antiseptic') {
+        if (game.visited.indexOf('USE_ANTISEPTIC') === -1) {
+            game.currentScript = 'USE_ANTISEPTIC';
+        } else {
+            game.currentScript ='USED_ANTISEPTIC';
+        }
+        return game;
+    }
+
     var newGame;
     switch (lastScript) {
         case 'GROWTH_SKIN':
@@ -980,7 +1039,13 @@ var part3 = function(game) {
             break;
         case 'ANTISEPTIC_WIPES':
             if (game.currentIntent == 'Command_Item' || game.currentIntent == 'AskWhat') {
-                game.currentScript = [(slot_item == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTLES'];
+                game.currentScript = ['OTHER_BOTTLES']; // (slot_item == 'antiseptic') ? 'USE_ANTISEPTIC' : 'OTHER_BOTTLES'
+                return game;
+            }
+            break;
+        case 'USED_ANTISEPTIC':
+            if (game.currentIntent == 'YesIntent' || game.currentIntent == 'NextIntent') {
+                game.currentScript = ['OTHER_BOTTLES'];
                 return game;
             }
             break;
@@ -1047,17 +1112,8 @@ var part3 = function(game) {
 var epilogue = function(game) {
     game = nextDialog(game);
     if (game.currentScript[game.currentScript.length - 1].slice(0, 4) == 'END') {
-        game.progressIndex = game_progress.END;
+        game.state = game_progress.END;
     }
-    this.attributes.game = {
-        'state': game_progress.END,
-        'progressIndex': game_progress.PROLOGUE,
-        'progress': {},
-        'slot': 'None',
-        'visited' : ['FIRST'],
-        'currentScript' : ['FIRST'],
-        'currentIntent' : 'None'
-    };
     return game;
 }
 
@@ -1065,10 +1121,18 @@ var useMedicine = function(game, slot_item) {
     console.log('PART_3 - use Medicine: ' + slot_item);
     switch (slot_item) {
         case 'badPlant':
+            if (game.visited.indexOf('DIRECTION_BADPLANT') === -1) {
+                game.currentScript = ['DIRECTION_BADPLANT'];
+                return game;
+            }
             game.progress.badPlant += 1;
             game.currentScript = (game.visited.indexOf('START_BADPLANT') === -1) ? ['START_BADPLANT'] : ['SECOND_BADPLANT'];
             return checkMedicine(game);
         case 'plantImage':
+            if (game.visited.indexOf('DIRECTION_PICTURE') === -1) {
+                game.currentScript = ['DIRECTION_PICTURE'];
+                return game;
+            }
             game.progress.plantImage += 1;
             game.currentScript = (game.visited.indexOf('START_IMAGE') === -1) ? ['START_IMAGE'] : ['SECOND_IMAGE'];
             return checkMedicine(game);

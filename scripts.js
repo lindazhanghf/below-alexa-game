@@ -1,6 +1,6 @@
 var belowScript = {
     'START': {
-        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. You can always say 'I need help' if you are stuck. <break time="1s"/> `
+        text: `Welcome to Below, an interactive fiction you play by talking to a person through the radio. Your progress will be saved upon exiting the game. You can always say 'I need help' if you are stuck. <break time="1s"/> `
     },
     'RETURNING': {
         text: `Welcome back to Below, you can restart the game by saying start over. You can always say 'I need help' if you are stuck. <break time="1s"/> `
@@ -15,7 +15,7 @@ var belowScript = {
         text: `Sorry I wasn't very clear. `
     },
     'END': {
-        text: `You have finished the first chapter of Below. The second chapter is still under development. You can exit the game or start over to uncover more stories below the surface.`
+        text: `You have finished the first chapter of Below. The second chapter is still under development. You can exit the game or start over to uncover more stories below the surface. `
     },
     'HELP': {
         text: [
@@ -197,7 +197,7 @@ var belowScript = {
                 triggers: ['YesIntent', 'Command_Move', 'NextIntent']
             },
         ],
-        prompt: ` 'Good idea' or Don't move her that much`,
+        prompt: ` 'Good idea'`,
     },
     'TRY_MOVE': {   // ... After a moment of trying, hard work sound, failed
         text: `Alright, give me a sec while I try moving her ... she's still in her pressurized suit. It's really heavy, so I'll need to remove it first. What do you think? `,
@@ -217,15 +217,15 @@ var belowScript = {
                 triggers: ['YesIntent', 'NextIntent']
             },
         ],
-        prompt: ` 'go ahead' or 'stop!'`,
+        prompt: ` 'go ahead' '`,
     },
     'INCISION': { // zipper sound, or cutting cloths sound, grossed out voice
-        text: `Alright. I’m going in from the side...but it smells kind of...odd. Oh god, this is gross`,
+        text: `Alright. I’m going in from the side...but it smells kind of...odd.  <break time="1s"/>  Oh god, this is gross`,
         prompt: ` 'what does it look like' or 'what does it smell like'`,
     },
     'IT_LOOKS': {
         text: `It looks dark and moldy, Some of it's on her skin! This looks horrible. We need to do something about it`,
-        prompt: ` 'we need to get it off her skin'`,
+        prompt: ` 'we need to get it off her skin', or 'what is the dark thing?'`,
     },
     'IT_SMELLS': {
         text: `It smells like moldy death- like something's been decaying on the inside of this suit for a really long time. It's not possible though, because she was only gone for two hours. This is bad. We need to hurry`,
@@ -233,7 +233,18 @@ var belowScript = {
     },
     'GUESS_PLANT': { // INFO
         text: `I think- shoot. I think she found exactly what we were trying to avoid. The Selca Lexorium has some cousins with similar physical traits, and some are toxic. There's not a lot of research on any of them given where they all grow.`,
-        prompt: ` 'we should remove it at once'`,
+        prompt: ` 'we should remove her suit'`,
+        options: [
+            {
+                next: 'PEEL_OFF',
+                triggers: ['YesIntent', 'NextIntent', 'Command_Remove']
+            },
+            {
+                next: 'RISK_LIFE',
+                triggers: ['NoIntent']
+            }
+        ],
+        reprompt: ` I think we need to remove her suit.`,
     },
     'PEEL_OFF': {
         text: `You’re right. That must be it! I’m going to make an incision on the other side to peel off the entire front of her suit`,
@@ -274,16 +285,22 @@ var belowScript = {
     'ANTISEPTIC_WIPES': {
         text: `I think cleaning her skin with antiseptic wipes would be a good move. There's also some bottles in here that look like they were thrown in by the Cap. The labels are hand written`,
         reprompt: ` What should I use? The antiseptic wipes, or the other bottles?`,
-        prompt: ` Try the antiseptic.`,
+        prompt: ` 'Try the antiseptic' or 'Use the other bottles'`,
     },
     'USE_ANTISEPTIC': {
         text: `So I got some surface grossness off, but the bacteria messed with her skin! The spots I cleaned are greenish and all bumpy. It's not something I can wipe off. Shoot, and she’s getting paler. We need to try something else. Ugh, I wish I had more medical knowledge`,
         reprompt: ` Maybe we should see the other bottles`,
         prompt: ` 'what are the other bottles?'`,
     },
+    'USED_ANTISEPTIC': {
+        text: ` I have already tried the antispetic wipes, and it doesn't help much. Maybe we should look at the other bottles? `,
+        prompt: ` 'Use the other bottles'`,
+    },
     'OTHER_BOTTLES': { // ORIGINAL: "Wow. Doctor Lee always did- does- have a sense of humor."
-        text: `Wow. Doctor Lee always did a sense of humor. One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over an image of a plant. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
+        text: ` One bottle says IN CASE OF BAD PLANTS, the other has some Chinese characters and a picture of a red X over an image of a plant. One of these has to be an antidote, right? But these dumb labels. Why does she do this to me?`,
+        first: `Wow. Doctor Lee always did a sense of humor. `,
         prompt: ` 'What is in the plant image?'`,
+        reprompt: ` Should I try the one for bad plant, or the one with plant image?`,
     },
     'FIRST_PICTURE': {
         text: `The directions- Okay, wow there's directions but no proper label. Nice. `,
@@ -316,6 +333,7 @@ var belowScript = {
     },
     'CONDITION_SAME': {
         text: `I am not sure about this. It doesn't seem to work. But her face is becoming more and more pale! What should I do? `,
+        prompt: ` 'try waiting for a second', or 'try the one for bad plant'`
     },
     'CONDITION_WORSE': {
         first: `I have a bad feeling about this ... `,
